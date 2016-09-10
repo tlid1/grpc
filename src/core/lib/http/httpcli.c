@@ -50,6 +50,9 @@
 #include "src/core/lib/iomgr/tcp_client.h"
 #include "src/core/lib/support/string.h"
 
+
+#include "src/core/lib/iomgr/rdma_client.h"
+
 typedef struct {
   gpr_slice request_text;
   grpc_http_parser parser;
@@ -224,7 +227,7 @@ static void next_address(grpc_exec_ctx *exec_ctx, internal_request *req,
   }
   addr = &req->addresses->addrs[req->next_address++];
   grpc_closure_init(&req->connected, on_connected, req);
-  grpc_tcp_client_connect(
+  grpc_rdma_client_connect(
       exec_ctx, &req->connected, &req->ep, req->context->pollset_set,
       (struct sockaddr *)&addr->addr, addr->len, req->deadline);
 }

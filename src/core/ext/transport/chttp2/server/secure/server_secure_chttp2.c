@@ -53,9 +53,11 @@
 #include "src/core/lib/surface/api_trace.h"
 #include "src/core/lib/surface/server.h"
 
+#include "src/core/lib/iomgr/rdma_server.h"
+
 typedef struct server_secure_state {
   grpc_server *server;
-  grpc_tcp_server *tcp;
+  grpc_rdma_server *tcp;
   grpc_server_security_connector *sc;
   grpc_server_credentials *creds;
   int is_shutdown;
@@ -124,7 +126,7 @@ static void on_secure_handshake_done(grpc_exec_ctx *exec_ctx, void *statep,
 
 static void on_accept(grpc_exec_ctx *exec_ctx, void *statep, grpc_endpoint *tcp,
                       grpc_pollset *accepting_pollset,
-                      grpc_tcp_server_acceptor *acceptor) {
+                      grpc_rdma_server_acceptor *acceptor) {
   server_secure_connect *state = gpr_malloc(sizeof(*state));
   state->state = statep;
   state_ref(state->state);
@@ -140,7 +142,7 @@ static void on_accept(grpc_exec_ctx *exec_ctx, void *statep, grpc_endpoint *tcp,
 static void start(grpc_exec_ctx *exec_ctx, grpc_server *server, void *statep,
                   grpc_pollset **pollsets, size_t pollset_count) {
   server_secure_state *state = statep;
-  grpc_tcp_server_start(exec_ctx, state->tcp, pollsets, pollset_count,
+  grpc_rdma_server_start(exec_ctx, state->tcp, pollsets, pollset_count,
                         on_accept, state);
 }
 
@@ -160,19 +162,19 @@ static void destroy_done(grpc_exec_ctx *exec_ctx, void *statep,
 static void destroy(grpc_exec_ctx *exec_ctx, grpc_server *server, void *statep,
                     grpc_closure *callback) {
   server_secure_state *state = statep;
-  grpc_tcp_server *tcp;
+  grpc_rdma_server *tcp;
   gpr_mu_lock(&state->mu);
   state->is_shutdown = 1;
   state->destroy_callback = callback;
   tcp = state->tcp;
   gpr_mu_unlock(&state->mu);
-  grpc_tcp_server_unref(exec_ctx, tcp);
+  grpc_rdma_server_unref(exec_ctx, tcp);
 }
 
 int grpc_server_add_secure_http2_port(grpc_server *server, const char *addr,
                                       grpc_server_credentials *creds) {
   grpc_resolved_addresses *resolved = NULL;
-  grpc_tcp_server *tcp = NULL;
+  grpc_rdma_server *tcp = NULL;
   server_secure_state *state = NULL;
   size_t i;
   size_t count = 0;
@@ -216,7 +218,7 @@ int grpc_server_add_secure_http2_port(grpc_server *server, const char *addr,
   state = gpr_malloc(sizeof(*state));
   memset(state, 0, sizeof(*state));
   grpc_closure_init(&state->destroy_closure, destroy_done, state);
-  err = grpc_tcp_server_create(&state->destroy_closure, &tcp);
+  err = grpc_rdma_server_create(&state->destroy_closure, &tcp);
   if (err != GRPC_ERROR_NONE) {
     goto error;
   }
@@ -231,7 +233,7 @@ int grpc_server_add_secure_http2_port(grpc_server *server, const char *addr,
 
   errors = gpr_malloc(sizeof(*errors) * resolved->naddrs);
   for (i = 0; i < resolved->naddrs; i++) {
-    errors[i] = grpc_tcp_server_add_port(
+    errors[i] = grpc_rdma_server_add_port(
         tcp, (struct sockaddr *)&resolved->addrs[i].addr,
         resolved->addrs[i].len, &port_temp);
     if (errors[i] == GRPC_ERROR_NONE) {
@@ -290,7 +292,7 @@ error:
     grpc_resolved_addresses_destroy(resolved);
   }
   if (tcp) {
-    grpc_tcp_server_unref(&exec_ctx, tcp);
+    grpc_rdma_server_unref(&exec_ctx, tcp);
   } else {
     if (sc) {
       GRPC_SECURITY_CONNECTOR_UNREF(&sc->base, "server");

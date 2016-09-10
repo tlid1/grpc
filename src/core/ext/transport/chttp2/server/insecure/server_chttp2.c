@@ -44,13 +44,15 @@
 #include "src/core/lib/surface/api_trace.h"
 #include "src/core/lib/surface/server.h"
 
+#include "src/core/lib/iomgr/rdma_server.h"
+
 static void new_transport(grpc_exec_ctx *exec_ctx, void *server,
                           grpc_endpoint *tcp, grpc_pollset *accepting_pollset,
-                          grpc_tcp_server_acceptor *acceptor) {
+                          grpc_rdma_server_acceptor *acceptor) {
   /*
    * Beware that the call to grpc_create_chttp2_transport() has to happen before
-   * grpc_tcp_server_destroy(). This is fine here, but similar code
-   * asynchronously doing a handshake instead of calling grpc_tcp_server_start()
+   * grpc_rdma_server_destroy(). This is fine here, but similar code
+   * asynchronously doing a handshake instead of calling grpc_rdma_server_start()
    * (as in server_secure_chttp2.c) needs to add synchronization to avoid this
    * case.
    */
@@ -64,8 +66,8 @@ static void new_transport(grpc_exec_ctx *exec_ctx, void *server,
 /* Server callback: start listening on our ports */
 static void start(grpc_exec_ctx *exec_ctx, grpc_server *server, void *tcpp,
                   grpc_pollset **pollsets, size_t pollset_count) {
-  grpc_tcp_server *tcp = tcpp;
-  grpc_tcp_server_start(exec_ctx, tcp, pollsets, pollset_count, new_transport,
+  grpc_rdma_server *tcp = tcpp;
+  grpc_rdma_server_start(exec_ctx, tcp, pollsets, pollset_count, new_transport,
                         server);
 }
 
@@ -73,14 +75,14 @@ static void start(grpc_exec_ctx *exec_ctx, grpc_server *server, void *tcpp,
    callbacks) */
 static void destroy(grpc_exec_ctx *exec_ctx, grpc_server *server, void *tcpp,
                     grpc_closure *destroy_done) {
-  grpc_tcp_server *tcp = tcpp;
-  grpc_tcp_server_unref(exec_ctx, tcp);
+  grpc_rdma_server *tcp = tcpp;
+  grpc_rdma_server_unref(exec_ctx, tcp);
   grpc_exec_ctx_sched(exec_ctx, destroy_done, GRPC_ERROR_NONE, NULL);
 }
 
 int grpc_server_add_insecure_http2_port(grpc_server *server, const char *addr) {
   grpc_resolved_addresses *resolved = NULL;
-  grpc_tcp_server *tcp = NULL;
+  grpc_rdma_server *tcp = NULL;
   size_t i;
   size_t count = 0;
   int port_num = -1;
@@ -97,7 +99,7 @@ int grpc_server_add_insecure_http2_port(grpc_server *server, const char *addr) {
     goto error;
   }
 
-  err = grpc_tcp_server_create(NULL, &tcp);
+  err = grpc_rdma_server_create(NULL, &tcp);
   if (err != GRPC_ERROR_NONE) {
     goto error;
   }
@@ -105,7 +107,7 @@ int grpc_server_add_insecure_http2_port(grpc_server *server, const char *addr) {
   const size_t naddrs = resolved->naddrs;
   errors = gpr_malloc(sizeof(*errors) * naddrs);
   for (i = 0; i < naddrs; i++) {
-    errors[i] = grpc_tcp_server_add_port(
+    errors[i] = grpc_rdma_server_add_port(
         tcp, (struct sockaddr *)&resolved->addrs[i].addr,
         resolved->addrs[i].len, &port_temp);
     if (errors[i] == GRPC_ERROR_NONE) {
@@ -150,7 +152,7 @@ error:
     grpc_resolved_addresses_destroy(resolved);
   }
   if (tcp) {
-    grpc_tcp_server_unref(&exec_ctx, tcp);
+    grpc_rdma_server_unref(&exec_ctx, tcp);
   }
   port_num = 0;
 

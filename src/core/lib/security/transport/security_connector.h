@@ -39,6 +39,7 @@
 #include "src/core/lib/iomgr/tcp_server.h"
 #include "src/core/lib/tsi/transport_security_interface.h"
 
+#include "src/core/lib/iomgr/rdma_server.h"
 /* --- status enum. --- */
 
 typedef enum { GRPC_SECURITY_OK = 0, GRPC_SECURITY_ERROR } grpc_security_status;
@@ -173,14 +174,14 @@ struct grpc_server_security_connector {
   const grpc_channel_args *channel_args;
   void (*do_handshake)(grpc_exec_ctx *exec_ctx,
                        grpc_server_security_connector *sc,
-                       grpc_tcp_server_acceptor *acceptor,
+                       grpc_rdma_server_acceptor *acceptor,
                        grpc_endpoint *nonsecure_endpoint, gpr_timespec deadline,
                        grpc_security_handshake_done_cb cb, void *user_data);
 };
 
 void grpc_server_security_connector_do_handshake(
     grpc_exec_ctx *exec_ctx, grpc_server_security_connector *sc,
-    grpc_tcp_server_acceptor *acceptor, grpc_endpoint *nonsecure_endpoint,
+    grpc_rdma_server_acceptor *acceptor, grpc_endpoint *nonsecure_endpoint,
     gpr_timespec deadline, grpc_security_handshake_done_cb cb, void *user_data);
 
 void grpc_server_security_connector_shutdown(

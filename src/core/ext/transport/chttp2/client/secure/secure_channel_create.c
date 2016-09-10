@@ -52,6 +52,8 @@
 #include "src/core/lib/surface/channel.h"
 #include "src/core/lib/tsi/transport_security_interface.h"
 
+#include "src/core/lib/iomgr/rdma_client.h"
+
 typedef struct {
   grpc_connector base;
   gpr_refcount refs;
@@ -179,7 +181,7 @@ static void connector_connect(grpc_exec_ctx *exec_ctx, grpc_connector *con,
   GPR_ASSERT(c->connecting_endpoint == NULL);
   gpr_mu_unlock(&c->mu);
   grpc_closure_init(&c->connected_closure, connected, c);
-  grpc_tcp_client_connect(
+  grpc_rdma_client_connect(
       exec_ctx, &c->connected_closure, &c->newly_connecting_endpoint,
       args->interested_parties, args->addr, args->addr_len, args->deadline);
 }

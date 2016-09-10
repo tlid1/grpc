@@ -2587,6 +2587,10 @@ LIBGRPC_SRC = \
     src/core/lib/iomgr/tcp_client_posix.c \
     src/core/lib/iomgr/tcp_client_windows.c \
     src/core/lib/iomgr/tcp_posix.c \
+    src/core/lib/iomgr/rdma_client_posix.c \
+    src/core/lib/iomgr/rdma_server_posix.c \
+    src/core/lib/iomgr/rdma_cm.c \
+    src/core/lib/iomgr/rdma_utils_posix.c \
     src/core/lib/iomgr/tcp_server_posix.c \
     src/core/lib/iomgr/tcp_server_windows.c \
     src/core/lib/iomgr/tcp_windows.c \
@@ -2860,6 +2864,10 @@ LIBGRPC_CRONET_SRC = \
     src/core/lib/iomgr/tcp_server_posix.c \
     src/core/lib/iomgr/tcp_server_windows.c \
     src/core/lib/iomgr/tcp_windows.c \
+    src/core/lib/iomgr/rdma_client_posix.c \
+    src/core/lib/iomgr/rdma_server_posix.c \
+    src/core/lib/iomgr/rdma_cm.c \
+    src/core/lib/iomgr/rdma_utils_posix.c \
     src/core/lib/iomgr/time_averaged_stats.c \
     src/core/lib/iomgr/timer.c \
     src/core/lib/iomgr/timer_heap.c \
@@ -3199,6 +3207,10 @@ LIBGRPC_UNSECURE_SRC = \
     src/core/lib/iomgr/tcp_server_posix.c \
     src/core/lib/iomgr/tcp_server_windows.c \
     src/core/lib/iomgr/tcp_windows.c \
+    src/core/lib/iomgr/rdma_client_posix.c \
+    src/core/lib/iomgr/rdma_server_posix.c \
+    src/core/lib/iomgr/rdma_cm.c \
+    src/core/lib/iomgr/rdma_utils_posix.c \
     src/core/lib/iomgr/time_averaged_stats.c \
     src/core/lib/iomgr/timer.c \
     src/core/lib/iomgr/timer_heap.c \

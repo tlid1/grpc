@@ -107,6 +107,7 @@ static void tcp_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_tcp */,
                              grpc_error *error);
 
 static void tcp_shutdown(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
+  gpr_log(GPR_INFO,"tcp_shutdown %p",ep);
   grpc_tcp *tcp = (grpc_tcp *)ep;
   grpc_fd_shutdown(exec_ctx, tcp->em_fd);
 }
@@ -114,6 +115,7 @@ static void tcp_shutdown(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
 static void tcp_free(grpc_exec_ctx *exec_ctx, grpc_tcp *tcp) {
   grpc_fd_orphan(exec_ctx, tcp->em_fd, tcp->release_fd_cb, tcp->release_fd,
                  "tcp_unref_orphan");
+  gpr_log(GPR_INFO,"tcp_free %p",tcp);
   gpr_slice_buffer_destroy(&tcp->last_read_buffer);
   gpr_free(tcp->peer_string);
   gpr_free(tcp);
@@ -152,6 +154,7 @@ static void tcp_ref(grpc_tcp *tcp) { gpr_ref(&tcp->refcount); }
 #endif
 
 static void tcp_destroy(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
+  gpr_log(GPR_INFO, "tcp_destroy %p",ep);
   grpc_tcp *tcp = (grpc_tcp *)ep;
   TCP_UNREF(exec_ctx, tcp, "destroy");
 }
@@ -252,6 +255,7 @@ static void tcp_continue_read(grpc_exec_ctx *exec_ctx, grpc_tcp *tcp) {
 
 static void tcp_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_tcp */,
                             grpc_error *error) {
+  gpr_log(GPR_INFO,"tcp_handle_read %p %d", arg, error == GRPC_ERROR_NONE);
   grpc_tcp *tcp = (grpc_tcp *)arg;
   GPR_ASSERT(!tcp->finished_edge);
 
@@ -266,6 +270,7 @@ static void tcp_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_tcp */,
 
 static void tcp_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
                      gpr_slice_buffer *incoming_buffer, grpc_closure *cb) {
+  gpr_log(GPR_INFO,"tcp_read %p",ep);
   grpc_tcp *tcp = (grpc_tcp *)ep;
   GPR_ASSERT(tcp->read_cb == NULL);
   tcp->read_cb = cb;
@@ -365,6 +370,7 @@ static bool tcp_flush(grpc_tcp *tcp, grpc_error **error) {
 
 static void tcp_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_tcp */,
                              grpc_error *error) {
+  gpr_log(GPR_INFO,"tcp_handle_write %p %d", arg, error == GRPC_ERROR_NONE);
   grpc_tcp *tcp = (grpc_tcp *)arg;
   grpc_closure *cb;
 
@@ -391,6 +397,8 @@ static void tcp_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_tcp */,
 
 static void tcp_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
                       gpr_slice_buffer *buf, grpc_closure *cb) {
+
+  gpr_log(GPR_INFO,"tcp_write %p",ep);
   grpc_tcp *tcp = (grpc_tcp *)ep;
   grpc_error *error = GRPC_ERROR_NONE;
 
@@ -454,6 +462,7 @@ static const grpc_endpoint_vtable vtable = {
 
 grpc_endpoint *grpc_tcp_create(grpc_fd *em_fd, size_t slice_size,
                                const char *peer_string) {
+  gpr_log(GPR_INFO,"grpc_tcp_create");
   grpc_tcp *tcp = (grpc_tcp *)gpr_malloc(sizeof(grpc_tcp));
   tcp->base.vtable = &vtable;
   tcp->peer_string = gpr_strdup(peer_string);
