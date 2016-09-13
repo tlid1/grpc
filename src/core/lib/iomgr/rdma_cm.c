@@ -173,7 +173,7 @@ static void rdma_destroy(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
   rdma_sentence_death(rdma);
   RDMA_UNREF(exec_ctx, rdma, "destroy");
 }
-static void readfd_notify(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma){
+/*static void readfd_notify(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma){
   if(rdma->rflag) return;
   gpr_mu_lock(&rdma->mu_rflag);
   grpc_fd_notify_on_read(exec_ctx, rdma->content->recvfdobj, &rdma->read_closure);
@@ -184,7 +184,7 @@ static void readfd_notified(grpc_rdma *rdma){
   gpr_mu_lock(&rdma->mu_rflag);
   rdma->rflag=false;
   gpr_mu_unlock(&rdma->mu_rflag);
-}
+}*/
 static void call_read_cb(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma,
                          grpc_error *error) {
   grpc_closure *cb = rdma->read_cb;
@@ -236,7 +236,7 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
   grpc_error *readerr=error;
   struct ibv_cq *cq;
   struct ibv_wc wc;
-  readfd_notified(rdma);
+  //readfd_notified(rdma);
   if(rdma->dead) readerr=GRPC_ERROR_CREATE("EOF");
   if(readerr==GRPC_ERROR_NONE) {
 	  void *ctx;
@@ -278,13 +278,13 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
   }
   call_read_cb(exec_ctx, rdma, readerr);
   RDMA_UNREF(exec_ctx,rdma,"read");
-  readfd_notify(exec_ctx,rdma);
+  //readfd_notify(exec_ctx,rdma);
 }
 
 static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
                      gpr_slice_buffer *incoming_buffer, grpc_closure *cb) {
   grpc_rdma *rdma = (grpc_rdma *)ep;
-  GPR_ASSERT(rdma->read_cb == NULL);
+  //GPR_ASSERT(rdma->read_cb == NULL);
   rdma->read_cb = cb;
   gpr_slice_buffer_reset_and_unref(incoming_buffer);
   if(rdma->incoming_buffer==&rdma->temp_buffer){
@@ -294,7 +294,8 @@ static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
   }else{
   	rdma->incoming_buffer = incoming_buffer;
   	RDMA_REF(rdma, "read");
-	readfd_notify(exec_ctx,rdma);
+//	readfd_notify(exec_ctx,rdma);
+  	grpc_fd_notify_on_read(exec_ctx, rdma->content->recvfdobj, &rdma->read_closure);
   }
 }
 static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_error *error){
@@ -443,7 +444,7 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
 	  rdma->write_cb = cb;
 	  RDMA_REF(rdma,"write");
 	  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
-	  readfd_notify(exec_ctx,rdma);
+	  //readfd_notify(exec_ctx,rdma);
   }
   GPR_TIMER_END("rdma_write", 0);
 }
@@ -498,7 +499,7 @@ grpc_endpoint *grpc_rdma_create(connect_context *c_ctx,
   rdma->rflag=false;
   rdma->peer_buffer_count=RDMA_POST_RECV_NUM - 1;
   gpr_mu_init(&rdma->mu_death);
-  gpr_mu_init(&rdma->mu_rflag);
+  //gpr_mu_init(&rdma->mu_rflag);
   gpr_slice_buffer_init(&rdma->temp_buffer);
   rdma->iov_size = 1;
   /* paired with unref in grpc_rdma_destroy */
