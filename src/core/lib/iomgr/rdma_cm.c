@@ -104,8 +104,8 @@ typedef struct {
   grpc_closure write_closure;
 
   char *peer_string;
-  bool dead,rflag;
-  gpr_mu mu_death,mu_rflag;
+  bool dead,rflag,msg_pending;
+  gpr_mu mu_death,mu_rflag,mu_bufcount;
   int peer_buffer_count;
 } grpc_rdma;
 static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
@@ -114,13 +114,18 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
                              grpc_error *error);
 static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_error *error);
 static void rdma_sentence_death(grpc_rdma*);
+static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) ;
 static void rdma_shutdown(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
   grpc_rdma *rdma = (grpc_rdma *)ep;
   if(rdma->dead) return;
-  gpr_log(GPR_DEBUG,"DESTROY:RDMA_CM_ID=%p",rdma->content->id);
+  //gpr_log(GPR_DEBUG,"DESTROY:RDMA_CM_ID=%p",rdma->content->id);
   rdma_disconnect(rdma->content->id);
+  //gpr_log(GPR_DEBUG,"ENDPOINT:DISCONNECTED");
   grpc_fd_shutdown(exec_ctx,rdma->content->sendfdobj);
   grpc_fd_shutdown(exec_ctx,rdma->content->recvfdobj);
+  rdma->msg_pending=false;
+  //gpr_log(GPR_DEBUG,"ENDPOINT:FD CLOSED");
+  //grpc_exec_ctx_flush(exec_ctx);
 }
 
 static void rdma_free(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma) {
@@ -129,11 +134,11 @@ static void rdma_free(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma) {
   grpc_closure *clicb=rdma->content->closure;
   rdma_ctx_unref(exec_ctx,rdma->content);
   if(clicb){
-    gpr_log(GPR_DEBUG,"Call callback of rdma_client_posix");
+    //gpr_log(GPR_DEBUG,"Call callback of rdma_client_posix");
     clicb->cb(exec_ctx,clicb->cb_arg,GRPC_ERROR_NONE);
   }
   gpr_free(rdma);
-  gpr_log(GPR_DEBUG,"Endpoint:Goodbye~");
+  //gpr_log(GPR_DEBUG,"Endpoint:Goodbye~");
 }
 //#define GRPC_RDMA_REFCOUNT_DEBUG
 #ifdef GRPC_RDMA_REFCOUNT_DEBUG
@@ -164,7 +169,10 @@ static void rdma_unref(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma) {
   }
 }
 
-static void rdma_ref(grpc_rdma *rdma) { gpr_ref(&rdma->refcount); }
+static void rdma_ref(grpc_rdma *rdma) { 
+  gpr_ref(&rdma->refcount);
+}
+
 #endif
 
 static void rdma_destroy(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
@@ -173,7 +181,7 @@ static void rdma_destroy(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
   rdma_sentence_death(rdma);
   RDMA_UNREF(exec_ctx, rdma, "destroy");
 }
-/*static void readfd_notify(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma){
+static void readfd_notify(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma){
   if(rdma->rflag) return;
   gpr_mu_lock(&rdma->mu_rflag);
   grpc_fd_notify_on_read(exec_ctx, rdma->content->recvfdobj, &rdma->read_closure);
@@ -184,7 +192,7 @@ static void readfd_notified(grpc_rdma *rdma){
   gpr_mu_lock(&rdma->mu_rflag);
   rdma->rflag=false;
   gpr_mu_unlock(&rdma->mu_rflag);
-}*/
+}
 static void call_read_cb(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma,
                          grpc_error *error) {
   grpc_closure *cb = rdma->read_cb;
@@ -210,33 +218,52 @@ static void call_read_cb(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma,
 }
 
 #define MAX_READ_IOVEC 4
-static void rdma_continue_read(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma, struct ibv_wc *wc) {
-  char *buffer=(char*)wc->wr_id;
+static void* rdma_continue_read(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma, struct ibv_wc *wc) {
+  rdma_message* msg=(rdma_message*)wc->wr_id;
+  char *buffer=msg->msg_content;
   //gpr_log(GPR_DEBUG,"Continue Read,Get a slice");
   GPR_TIMER_BEGIN("rdma_continue_read", 0);
-  gpr_log(GPR_DEBUG,"A Message of %d Bytes Received",wc->byte_len);
-  if(rdma->incoming_buffer==NULL) 
-	  rdma->incoming_buffer=&rdma->temp_buffer;
-  gpr_slice_buffer_add_indexed(rdma->incoming_buffer,gpr_slice_malloc(wc->byte_len));
-  memcpy(GPR_SLICE_START_PTR(rdma->incoming_buffer->slices[rdma->incoming_buffer->count-1]),
-		             buffer,
-		             wc->byte_len);
-  rdma_post_recv(rdma->content->id,
+  //gpr_log(GPR_DEBUG,"A Message of %d Bytes Received",wc->byte_len);
+  if(msg->msg_info!=MSGINFO_MESSAGE){
+    gpr_mu_lock(&rdma->mu_bufcount);
+    rdma->peer_buffer_count+=msg->msg_info;
+   // gpr_log(GPR_DEBUG,"A sms,%d messages left",rdma->peer_buffer_count);
+    gpr_mu_unlock(&rdma->mu_bufcount);
+    rdma_post_recv(rdma->content->id,
+			  msg,
+			  msg,
+			  INIT_RECV_BUFFER_SIZE,
+			  rdma->content->recv_buffer_mr);
+        return(NULL);
+  }else{
+	  if(rdma->incoming_buffer==NULL) 
+		  rdma->incoming_buffer=&rdma->temp_buffer;
+	  gpr_slice_buffer_add_indexed(rdma->incoming_buffer,
+                                       gpr_slice_malloc(msg->msg_len));
+	  memcpy(GPR_SLICE_START_PTR(rdma->incoming_buffer->slices[rdma->incoming_buffer->count-1]),
 		 buffer,
-		 buffer,
-		 INIT_RECV_BUFFER_SIZE,
-		 rdma->content->recv_buffer_mr);
-
+		 msg->msg_len);
+          rdma_post_recv(rdma->content->id,
+			  msg,
+			  msg,
+			  INIT_RECV_BUFFER_SIZE,
+			  rdma->content->recv_buffer_mr);
+	  //gpr_log(GPR_DEBUG,"A Message");
+          return((void*)msg);
+  }
 }
-#define MAX_RETRY_COUNT 200
-#define SLEEP_PERIOD 20000
+#define MAX_RETRY_COUNT 2
+#define SLEEP_PERIOD 2
 static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
                             grpc_error *error) {
   grpc_rdma *rdma = (grpc_rdma *)arg;
   grpc_error *readerr=error;
   struct ibv_cq *cq;
   struct ibv_wc wc;
-  //readfd_notified(rdma);
+  int refilled_bufs = 0;
+  void* ret;
+  rdma_smessage* sms=NULL;
+  readfd_notified(rdma);
   if(rdma->dead) readerr=GRPC_ERROR_CREATE("EOF");
   if(readerr==GRPC_ERROR_NONE) {
 	  void *ctx;
@@ -246,10 +273,8 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 	  while(0!=get_cqe_result){
 		  if(errno!=EAGAIN||retry_count>MAX_RETRY_COUNT){
 			  gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
-                          grpc_fd_notify_on_read(exec_ctx, rdma->content->recvfdobj, &rdma->read_closure);
+			  readfd_notify(exec_ctx,rdma);
                           return;
-			  //readerr=GRPC_OS_ERROR(errno,"handle_read");
-			  //break;
 		  }
 		  ++retry_count;
 		  usleep(SLEEP_PERIOD);
@@ -259,9 +284,13 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 		  while(ibv_poll_cq(cq,1,&wc)){
 			  ++events_completed;
 			  if(wc.status==IBV_WC_SUCCESS){
-				  rdma_continue_read(exec_ctx,rdma,&wc);
+				  ret=rdma_continue_read(exec_ctx,rdma,&wc);
+				  if(ret!=NULL){
+				    sms=&(((rdma_memory_region*)ret)->sms);
+				    ++refilled_bufs;
+				  } 
 			  }else{
-				  gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d",wc.opcode,wc.status);
+				  gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d wrid=%d",wc.opcode,wc.status,(int)wc.wr_id);
 				  gpr_slice_buffer_reset_and_unref(rdma->incoming_buffer);
 				  if(!readerr) readerr=GRPC_ERROR_CREATE("Read Failed");
 			  }
@@ -274,11 +303,34 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 	  }
   }
   if(readerr!=GRPC_ERROR_NONE){
-    gpr_log(GPR_ERROR,"Handle_Read Failed");
+      call_read_cb(exec_ctx, rdma, readerr);
+      RDMA_UNREF(exec_ctx,rdma,"read");
+  }else{
+	  if(sms){
+	//	  gpr_log(GPR_DEBUG,"Send a short message %d %p",refilled_bufs,sms);
+		  sms->msg_info=refilled_bufs;
+		  rdma_post_send(rdma->content->id,
+				  (void*)SENDCONTEXT_SMS,
+				  sms,
+				  sizeof(rdma_smessage),
+				  rdma->content->recv_buffer_mr,
+				  0);
+      		  call_read_cb(exec_ctx, rdma, readerr);
+                  RDMA_UNREF(exec_ctx,rdma,"read");
+	  }else{
+		  if(rdma->read_cb)
+			  readfd_notify(exec_ctx,rdma);
+	  }
+	  if(rdma->msg_pending&&rdma->peer_buffer_count>0){
+		  grpc_error* writeerr=GRPC_ERROR_NONE;
+		  rdma_flush(rdma,&writeerr);
+		  if(writeerr!=GRPC_ERROR_NONE){
+			  rdma_on_send_complete(exec_ctx,rdma,writeerr);
+		  }else{
+			  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
+		  }
+	  }
   }
-  call_read_cb(exec_ctx, rdma, readerr);
-  RDMA_UNREF(exec_ctx,rdma,"read");
-  //readfd_notify(exec_ctx,rdma);
 }
 
 static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -294,8 +346,7 @@ static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
   }else{
   	rdma->incoming_buffer = incoming_buffer;
   	RDMA_REF(rdma, "read");
-//	readfd_notify(exec_ctx,rdma);
-  	grpc_fd_notify_on_read(exec_ctx, rdma->content->recvfdobj, &rdma->read_closure);
+	readfd_notify(exec_ctx,rdma);
   }
 }
 static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_error *error){
@@ -308,6 +359,14 @@ static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_e
 #define MAX_WRITE_IOVEC 16
 #define MIN_NUM(a,b) ((a)<(b)?(a):(b))
 static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) {
+  gpr_mu_lock(&rdma->mu_bufcount);
+  if(rdma->peer_buffer_count<=0) {
+      //  gpr_log(GPR_DEBUG,"WAIT FOR PARTNER's BUFFER");
+	rdma->msg_pending=true;
+	gpr_mu_unlock(&rdma->mu_bufcount);
+	return(false);
+  }
+  rdma->msg_pending=false;
   size_t sending_length;
   size_t unwind_slice_idx;
   size_t unwind_byte_idx;
@@ -317,8 +376,9 @@ static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) {
   sending_length=0;
   unwind_slice_idx=rdma->outgoing_slice_idx;
   unwind_byte_idx=rdma->outgoing_byte_idx;
-  char *outmemory_now=rdma->content->send_buffer_region;
-  size_t slicelength=0,thislength=0,restlength=INIT_RECV_BUFFER_SIZE;
+  rdma_message *msg=(rdma_message*)rdma->content->send_buffer_region;
+  char* outmemory_now=msg->msg_content;
+  size_t slicelength=0,thislength=0,restlength=RDMA_MSG_CONTENT_SIZE;
   for(;unwind_slice_idx<rdma->outgoing_buffer->count;++unwind_slice_idx){
 	  slicelength=GPR_SLICE_LENGTH(rdma->outgoing_buffer->slices[unwind_slice_idx])-unwind_byte_idx;
 	  thislength=MIN_NUM(slicelength,restlength);
@@ -331,16 +391,21 @@ static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) {
 	  if(thislength<slicelength) break;
 	  unwind_byte_idx=0;
   }
- // gpr_log(GPR_DEBUG,"Send a message of length %d",(int)sending_length);
+  msg->msg_info=MSGINFO_MESSAGE;
+  msg->msg_len=sending_length;
   memset(&workreq,0,sizeof(workreq));
   workreq.opcode = IBV_WR_SEND;
+  workreq.wr_id = SENDCONTEXT_DATA;
   workreq.sg_list = &sge;
   workreq.num_sge = 1;
   workreq.send_flags = IBV_SEND_SIGNALED;
   sge.addr = (uintptr_t)rdma->content->send_buffer_region;
-  sge.length = (uint32_t)sending_length;
+  sge.length = (uint32_t)((uintptr_t)outmemory_now-(uintptr_t)msg);
   sge.lkey = rdma->content->send_buffer_mr->lkey;
   result=ibv_post_send(rdma->content->qp,&workreq,&bad_wr);
+  --rdma->peer_buffer_count;
+//  gpr_log(GPR_DEBUG,"Send a message,%d messages left",rdma->peer_buffer_count);
+  gpr_mu_unlock(&rdma->mu_bufcount);
   if(result==0){
     rdma->outgoing_slice_idx=unwind_slice_idx;
     rdma->outgoing_byte_idx=(unwind_slice_idx>=rdma->outgoing_buffer->count?0:thislength);
@@ -357,6 +422,7 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
   grpc_rdma *rdma = (grpc_rdma *)arg;
   grpc_error *writeerr=error;
   //grpc_closure *cb;
+  bool sendctx_has_data=0;
   if(rdma->dead) writeerr=GRPC_ERROR_CREATE("Shutdown");
 
   if (writeerr == GRPC_ERROR_NONE) {
@@ -380,11 +446,16 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 		  while(ibv_poll_cq(cq,1,&wc)){
 			  ++events_completed;
 			  if(wc.status!=IBV_WC_SUCCESS){
-			    gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d",wc.opcode,wc.status);
+			    gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d wrid=%d",wc.opcode,wc.status,(int)wc.wr_id);
 			    if(!writeerr) writeerr=GRPC_ERROR_CREATE("Read Failed");
-			  }else{
-  			    gpr_log(GPR_DEBUG,"A Message sent");
-			  }
+			  }//else{
+  			    //gpr_log(GPR_DEBUG,"A Message sent");
+			  //}
+			  if(wc.wr_id==SENDCONTEXT_DATA){
+                            sendctx_has_data=1;
+			  }/*else{
+			    gpr_log(GPR_DEBUG,"SMS done");
+			  }*/
 		  }
 		  ibv_ack_cq_events(cq,events_completed);
 		  if(0!=ibv_req_notify_cq(cq,0)){
@@ -394,18 +465,25 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 	  }
   }
   if(writeerr!=GRPC_ERROR_NONE){
-  //process error here
     gpr_log(GPR_ERROR,"Handle_Write Failed");
   }
   if(writeerr||rdma->outgoing_slice_idx>=rdma->outgoing_buffer->count){
 	  rdma_on_send_complete(exec_ctx,rdma,writeerr);
 	  RDMA_UNREF(exec_ctx,rdma,"write");
   }else{
-	  rdma_flush(rdma,&writeerr);
-	  if(error!=GRPC_ERROR_NONE)
-		  rdma_on_send_complete(exec_ctx,rdma,writeerr);
-	  else
-		  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
+          if(sendctx_has_data){
+		  if(rdma_flush(rdma,&writeerr)){
+			  if(writeerr!=GRPC_ERROR_NONE)
+				  rdma_on_send_complete(exec_ctx,rdma,writeerr);
+			  else
+				  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
+		  }else{
+	               //   gpr_log(GPR_DEBUG,"Lack of buffer,wait for a while");
+	  	          readfd_notify(exec_ctx,rdma);
+		  }
+	  }else{
+	     grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
+          }
   }
 }
 
@@ -420,7 +498,7 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
     for (i = 0; i < buf->count; i++) {
       char *data =
           gpr_dump_slice(buf->slices[i], GPR_DUMP_HEX | GPR_DUMP_ASCII);
-      gpr_log(GPR_DEBUG, "WRITE %p (peer=%s): %s", rdma, rdma->peer_string, data);
+  //    gpr_log(GPR_DEBUG, "WRITE %p (peer=%s): %s", rdma, rdma->peer_string, data);
       gpr_free(data);
     }
   }
@@ -437,14 +515,19 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
   rdma->outgoing_slice_idx = 0;
   rdma->outgoing_byte_idx = 0;
 
-  rdma_flush(rdma, &error);
-  if(error!=GRPC_ERROR_NONE)
-	  grpc_exec_ctx_sched(exec_ctx, cb, error, NULL);
-  else{
+  if(rdma_flush(rdma, &error)){
+	  if(error!=GRPC_ERROR_NONE)
+		  grpc_exec_ctx_sched(exec_ctx, cb, error, NULL);
+	  else{
+		  rdma->write_cb = cb;
+		  RDMA_REF(rdma,"write");
+		  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
+	  }
+  }else{
+//	  gpr_log(GPR_DEBUG,"Lackof buffer,wait for a while");
 	  rdma->write_cb = cb;
 	  RDMA_REF(rdma,"write");
-	  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
-	  //readfd_notify(exec_ctx,rdma);
+	  readfd_notify(exec_ctx,rdma);
   }
   GPR_TIMER_END("rdma_write", 0);
 }
@@ -492,14 +575,15 @@ grpc_endpoint *grpc_rdma_create(connect_context *c_ctx,
   rdma->release_fd_cb = NULL;
   rdma->release_fd_in=rdma->release_fd_out = NULL;
   rdma->incoming_buffer = NULL;
-  gpr_log(GPR_DEBUG,"CREATE:RDMA_CM_ID=%p",c_ctx->id);
+  //gpr_log(GPR_DEBUG,"CREATE:RDMA_CM_ID=%p",c_ctx->id);
   //rdma->outgoing_memory=NULL;
   //rdma->outgoing_mr=NULL;
   rdma->dead=false;
   rdma->rflag=false;
-  rdma->peer_buffer_count=RDMA_POST_RECV_NUM - 1;
+  rdma->peer_buffer_count=RDMA_POST_RECV_NUM >> 1;
   gpr_mu_init(&rdma->mu_death);
-  //gpr_mu_init(&rdma->mu_rflag);
+  gpr_mu_init(&rdma->mu_bufcount);
+  gpr_mu_init(&rdma->mu_rflag);
   gpr_slice_buffer_init(&rdma->temp_buffer);
   rdma->iov_size = 1;
   /* paired with unref in grpc_rdma_destroy */
@@ -534,13 +618,14 @@ void grpc_rdma_destroy_and_release_fd(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep
 }
 
 static void rdma_sentence_death(grpc_rdma *rdma){
-  if(rdma->dead) return;
   gpr_mu_lock(&rdma->mu_death);
   rdma->dead=true;
   gpr_mu_unlock(&rdma->mu_death);
 }
 void  grpc_rdma_sentence_death(grpc_exec_ctx *ctx,grpc_endpoint *ep){
   grpc_rdma *rdma=(grpc_rdma *) ep;
+  if(rdma->dead) return;
+//  gpr_log(GPR_DEBUG,"GRPC_SENTENCE_DEATH");
   rdma_shutdown(ctx,ep);
   rdma_sentence_death(rdma);
 //  rdma_destroy_fd(ctx,rdma);

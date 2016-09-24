@@ -1,0 +1,1000 @@
+   47  ls
+   48  cd likaixi/
+   49  ls
+   50  vim client.c 
+   51  pwd
+   52  vim client.c 
+   53  su
+   54  ls
+   55  tmux a 
+   56  ls
+   57  cd ..
+   58  ls
+   59  cd test
+   60  ls
+   61  rm -rf *.c
+   62  cd ..
+   63  ls
+   64  rm -rf *.c
+   65  cd  rdma_grpc/grpc/test/
+   66  ls
+   67  cd core/
+   68  ls
+   69  cd iomgr/
+   70  ls
+   71  vim vim tcp_posix_test
+   72  vim vim tcp_posix_test.c
+   73  vim tcp_posix_test.c
+   74  ls
+   75  cd ..
+   76  ls
+   77  cd ~
+   78  ls
+   79  cd likaixi/
+   80  ls
+   81  cd the-geek-in-the-corner/
+   82  ls
+   83  cd 01
+   84  cd 01_basic-client-server/
+   85  ls
+   86  cp *.c ../../
+   87  cd ../../
+   88  ls
+   89  ls rdma_grpc/
+   90  ls rdma_grpc/grpc/
+   91  cp *.c rdma_grpc/grpc/test/
+   92  cd rdma_grpc/grpc/te
+   93  cd rdma_grpc/grpc/test/
+   94  ls
+   95  ls core
+   96  ls core/iomgr
+   97  cp *.c core/iomgr/
+   98  cd core/iomgr/
+   99  ls
+  100  mv server.c rdma_posix_test_server.c
+  101  mv client.c rdma_posix_test_client.c
+  102  ;s
+  103  ls
+  104  vim rdma_posix_test_server.c 
+  105  cd ..
+  106  ls
+  107  cd test
+  108  cd core
+  109  cd iomgr/
+  110  ls
+  111  man tmux
+  112  ls
+  113  vim rdma_server_posix.c 
+  114  ulimit -l unlimited
+  115  htop
+  116  mtrace
+  117  sudo -i
+  118  tmux a -t 0
+  119  cd likaixi/
+  120  ls
+  121  cd rdma_grpc/
+  122  ls
+  123  cd grpc/test
+  124  ls
+  125  cd core
+  126  ls
+  127  cd iomgr
+  128  ls
+  129  vim rdma_server_posix_test.c
+  130  tmux a -t 0
+  131  vim rdma_server_posix_test.c
+  132  tmux a -t 0
+  133  cd ..
+  134  cd src
+  135  cd core
+  136  cd lib
+  137  cd iomgr/
+  138  ls
+  139  vim rdma_server_posix.c
+  140  export MALLOC_CHECK_=3
+  141  tmux a -t 0
+  142  ls
+  143  vim rdma_cm.c
+  144  tmux a -t 0
+  145  man valgrid
+  146  man valgrind
+  147  tmux a -t 0
+  148  man valgrind
+  149  tmux a -t 0
+  150  ls
+  151  tmux a -t 0
+  152  tmux a
+  153  tmux a -t 1
+  154  tmux
+  155  tmux a
+  156  ls
+  157  tmux 
+  158  tmux -t 1
+  159  tmux a -t 1 
+  160  tmux a -t 0
+  161  fish 
+  162  fish
+  163  vim rdma_server_posix_test.c 
+  164  fish
+  165  fish 
+  166  cd likaixi/
+  167  cd the-geek-in-the-corner/
+  168  cd 01_basic-client-server/
+  169  vim server.c
+  170  ls
+  171  make
+  172  tmux a -t 1
+  173  tmux a -t 0
+  174  tmux a -t 1
+  175  tmux a -t 0
+  176  ls
+  177  tmuxa 
+  178  tmux a -t 0 
+  179  tmux a -t 1
+  180  tmux a -t 0
+  181  ls
+  182  fish 
+  183  cd likaixi
+  184  cd
+  185  ls
+  186  cd likaixi/
+  187  cd the-geek-in-the-corner/
+  188  ls
+  189  cd 01_basic-client-server/
+  190  ls
+  191  make 
+  192  ls
+  193  ./server 
+  194  ./client 0.0.0.0 44401
+  195  vim client.c 
+  196  ./client 0.0.0.0 432040
+  197  ./client 0.0.0.0 43240
+  198  vim client.c 
+  199  cd ..
+  200  ls
+  201  vim likaixi/server.c 
+  202  ls
+  203  cd 01_basic-client-server/
+  204  ls
+  205  vim client.c 
+  206  ./client 0.0.0.0 33118
+  207  ls
+  208  vim client.c 
+  209  ./client 0.0.0.0 44401
+  210  make 
+  211  ./client 0.0.0.0 44401
+  212  ./client 0.0.0.0 44401 
+  213  ./client 0.0.0.0 44401 && ./client 0.0.0.0 44401
+  214  ls
+  215  vim Makefile 
+  216  gdb client 0.0.0.0 44401
+  217  vim client.c 
+  218  cd ..
+  219  ls
+  220  cd likaixi/
+  221  ls
+  222  vim server.c 
+  223  man rdma_get_cm_event
+  224  cd 
+  225  l
+  226  ls
+  227  cd likaixi/the-geek-in-the-corner/
+  228  ls
+  229  cd likaixi/
+  230  ls
+  231  vim client.c 
+  232  man rdma_ack_cm_event
+  233  vim /home/uniquesc/likaixi/the-geek-in-the-corner/likaixi/client.c
+  234  ls
+  235  vim server.c 
+  236  vim client
+  237  vim client.c 
+  238  vim server.c 
+  239  gcc -o server.c 
+  240  gcc -c server.c 
+  241  vim server.c 
+  242  gcc -c server.c 
+  243  vim server.c 
+  244  q
+  245  vim server.c 
+  246  clang -c server.c 
+  247  sudo yum install clang
+  248  clang -c server.c 
+  249  vim server.c 
+  250  clang -c server.c 
+  251  vim server.c 
+  252  clang -c server.c 
+  253  vim server.c 
+  254  clang -c server.c 
+  255  gcc -c server
+  256  gcc -c server.c
+  257  vim server.c 
+  258  gcc -c server.c
+  259  vim server.c 
+  260  gcc -c server.c
+  261  vim server.c 
+  262  gcc -c server.c
+  263  vim server.c 
+  264  vim client.c 
+  265  vim server.c 
+  266  ssh gpuusr@node307
+  267  ls
+  268  ls
+  269  ssh gpuusr@node307
+  270  cd ../../..
+  271  ls
+  272  tools/run_tests/run_tests.py -l c -c dbg 
+  273  make 
+  274  make -j8
+  275  vim src/core/lib/iomgr/tcp_server_posix.c
+  276  make -j8
+  277  tools/run_tests/run_tests.py -l c -c dbg 
+  278  tools/run_tests/run_tests.py -l c 
+  279  ls
+  280  cd likaixi/
+  281  cd rdma_grpc/
+  282  ls
+  283  cd build
+  284  ls
+  285  vim Makefile 
+  286  cd //
+  287  ls
+  288  cd ~/likaixi/rdma_grpc/
+  289  s
+  290  ls
+  291  cd grpc/
+  292  ls
+  293  cd src
+  294  ls
+  295  cd core
+  296  ls
+  297  cd lib
+  298  cd iomgr/
+  299  ls
+  300  vim rdma_cm.c
+  301  ps -e
+  302  vim rdma_cm.c
+  303  vim iomgr.c
+  304  vim iomgr.h
+  305  vim iomgr.c
+  306  ls
+  307  vim iomgr.c
+  308  vim network_status_tracker.c
+  309  vim iomgr.c
+  310  vim rdma_cm.c
+  311  cd ..
+  312  cd grpc/
+  313  ls
+  314  cd test/
+  315  cd core/
+  316  ls
+  317  cd iomgr/
+  318  ls
+  319  sh compile
+  320  tmux a -t 1
+  321  tmux a -t 0
+  322  tmux a -t 1
+  323  tmux a -t 0
+  324  tmux a -t 1
+  325  ls
+  326  cd likaixi/
+  327  ulimit -l
+  328  man ulimit
+  329  ifconfig
+  330  exit
+  331  cd likaixi/rdma_grpc/grpc/test/core/iomgr/
+  332  ls
+  333  gdb rdma_read_test 
+  334  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  335  sh compile
+  336  gdb rdma_read_test 
+  337  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  338  echo $MALLOC_CHECK_
+  339  export MALLOC_CHECK=3
+  340  echo $MALLOC_CHECK_
+  341  export MALLOC_CHECK_=3
+  342  echo $MALLOC_CHECK_
+  343  gdb rdma_read_test 
+  344  sh compile
+  345  gdb rdma_read_test 
+  346  sh compile
+  347  gdb rdma_read_test 
+  348  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  349  vim rdma_cm_recv_test.c 
+  350  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  351  sh compile
+  352  vim rdma_cm_recv_test.c 
+  353  gdb rdma_read_test 
+  354  vim rdma_cm_recv_test.c 
+  355  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  356  sh compile
+  357  gdb rdma_read_test 
+  358  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  359  sh compile
+  360  gdb rdma_read_test 
+  361  vim /usr/include/infiniband/verbs.h
+  362  vim ~/likaixi/the-geek-in-the-corner/likaixi/client.c
+  363  sh compile
+  364  gdb rdma_read_test 
+  365  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  366  sh compile
+  367  gdb rdma_read_test 
+  368  vim ~/likaixi/rdma_grpc/grpc/src/core/lib/iomgr/rdma_cm.c
+  369  ls
+  370  tmux a -t 0
+  371  tmux a -t 1
+  372  tmux a -t 0
+  373  tmux a -t 1
+  374  tmux a -t 0 
+  375  tmux a -t 1
+  376  tmux a -t 0
+  377  tmux a -t 1
+  378  tmux a -t 0
+  379  tmux a -t 1
+  380  tmux a -t 0
+  381  man fcntl
+  382  tmux
+  383  man tmux
+  384  fish
+  385  tmux a
+  386  tmux a -t 1
+  387  tmux a -t 0
+  388  cd likaixi/rdma_grpc/grpc/src/core/lib/iomgr/
+  389  tmux -a t 1
+  390  tmux a -t 1
+  391  tmux a
+  392  tmux a -t 0
+  393  ls
+  394  cd likaixi/
+  395  ls
+  396  cd rdma_grpc/grpc/src/core/lib/iomgr/
+  397  vim rdma_cm.c
+  398  tmux a -t 1
+  399  ./greeter_async_client
+  400  history 
+  401  export LD_LIBRARY_PATH= $LD_LIBRARY_PATH:/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/:/home/uniquesc/likaixi/grpc/libs/opt
+  402  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/:/home/uniquesc/likaixi/grpc/libs/opt
+  403  ./greeter_async_client
+  404  ls
+  405  vim greeter_async_cient.cc
+  406  vim greeter_async_client.cc
+  407  make
+  408  ./greeter_async_client
+  409  vim greeter_async_client.cc
+  410  ./greeter_async_client
+  411  ls
+  412  tmux a -t 0
+  413  ls
+  414  cd 
+  415  l
+  416  ls
+  417  vim .bashrc 
+  418  source .bashrc 
+  419  vim .bashrc 
+  420  source .bashrc 
+  421  cd  ~/likaixi/rdma_grpc/grpc/test/core/iomgr/
+  422  ulimit -l
+  423  ;s
+  424  ls
+  425  gdb rdma_read_test 
+  426  ulimit -l 64
+  427  gdb rdma_read_test 
+  428  ulimit -l unlimited
+  429  ulimit -l 
+  430  ls
+  431  vim rdma_utils_posix.c 
+  432  vim rdma_utils_posix.h
+  433  tmux a -t 0
+  434  tmux a -t 1
+  435  exit
+  436  htop
+  437  exit
+  438  ls
+  439  vim Makefile 
+  440  tmux a -t 0
+  441  tmux a -t 1
+  442  tmux a -t 0
+  443  exit
+  444  ls
+  445  tmux a -t 0
+  446  tmux a -t 1
+  447  tmux a -t 0
+  448  tmux a -t 1
+  449  tmux a -t 0
+  450  tmux a -t 1
+  451  tmux a -t 0
+  452  l
+  453  cd likaixi/
+  454  ls
+  455  cd the-geek-in-the-corner/
+  456  ls
+  457  cd 01_basic-client-server/
+  458  ls
+  459  cp client.c 
+  460  cp client.c client_test.c
+  461  vim client_test.c 
+  462  vim Makefile 
+  463  make clean
+  464  make 
+  465  vim Makefile 
+  466  make 
+  467  ls
+  468  vim client_test.c 
+  469  ls
+  470  make 
+  471  ./server &
+  472  ./client_test 
+  473  ./client_test 0.0.0.0 0
+  474  ./client_test 0.0.0.0 23723
+  475  vim client_test.c 
+  476  ./client 0.0.0.0 23723
+  477  gdb ./client
+  478  ]ls
+  479  ls
+  480  cd ..
+  481  ls
+  482  cd ...
+  483  cd ..
+  484  ls
+  485  git clone the-geek-in-the-corner test
+  486  cd test/
+  487  ls
+  488  cd 01_basic-client-server/
+  489  ls
+  490  make 
+  491  vim client.c 
+  492  make 
+  493  ./server &
+  494  ./client 0.0.0.0 45705
+  495  fd %1
+  496  fg %1
+  497  vim client.c 
+  498  make 
+  499  ./server &
+  500  ./client 0.0.0.0 29222
+  501  vim client.c 
+  502  ./server &
+  503  kill %1
+  504  kill %2
+  505  kill %3
+  506  kill %4
+  507  jobs
+  508  ./server &
+  509  ./client 0.0.0.0 59050
+  510  kill %1
+  511  vim client.c 
+  512  make 
+  513  ./server &
+  514  ./client :: 29262
+  515  ./client 0.0.0.0 29262
+  516  kill %1
+  517  kill %2
+  518  vim client.c 
+  519  make 
+  520  ./server 
+  521  ./server &
+  522  ./client 0.0.0.0 29303
+  523  kill %1
+  524  jobs
+  525  ll
+  526  git status
+  527  git checkout client.c
+  528  git status
+  529  vim client.c 
+  530  make 
+  531  ./server 
+  532  ./server  &
+  533  .client 0.0.0.0 29363
+  534  ./client 0.0.0.0 29363
+  535  vim client.c 
+  536  gdb client.c 
+  537  gdb client
+  538  git checkout  client.c
+  539  make 
+  540  ./client 
+  541  ./client 0.0.0.0
+  542  ./client 0.0.0.0 33802
+  543  kill %1
+  544  ./server 
+  545  ./server  &
+  546  ./client 0.0.0.0 29485
+  547  ls
+  548  kill %1
+  549  kill %2
+  550  ls
+  551  git status
+  552  ls
+  553  cd ../..
+  554  ls
+  555  cd the-geek-in-the-corner/
+  556  ls
+  557  vim 01_basic-client-server/client.c 
+  558  htop
+  559  vim ../../../src/core/lib/iomgr/rdma_client_posix.c
+  560  mak e
+  561  make 
+  562  source bashrc
+  563  make clean
+  564  make 
+  565  ./greeter_async_server 
+  566  gdb ./greeter_async_server 
+  567  ./greeter_async_server 
+  568  ssh node336
+  569  cd ../..
+  570  ls
+  571  cd ..
+  572  ls
+  573  make clean
+  574  make 
+  575  ls /home/uniquesc/likaixi/grpc/libs/opt/ 
+  576  nm /home/uniquesc/likaixi/grpc/libs/opt/libgrpc.a
+  577  nm /home/uniquesc/likaixi/grpc/libs/opt/libgrpc.a | grep U | less
+  578  vim Makefile 
+  579  echo $cc
+  580  vim Makefile 
+  581  cd examples/
+  582  ls
+  583  cd cpp/
+  584  ls
+  585  cd helloworld/
+  586  ls
+  587  vim Makefile 
+  588  cd likaixi/rdma_grpc/grpc/test/core/iomgr/
+  589  ls
+  590  vim rdma_client_posix_test.c 
+  591  ls
+  592  vim compile2
+  593  tmux a -t 0
+  594  tmux a -t 1
+  595  tmux a -t 0
+  596  tmux a -t 1
+  597  tmux a -t 0
+  598  tmux a -t 1
+  599  tmux a -t 0
+  600  tmux a -t 1
+  601  tmux a -t 0
+  602  tmux a -t 1
+  603  tmux a -t 0
+  604  tmux a -t 1
+  605  tmux a -t 0
+  606  exit
+  607  ./greeter_async_client
+  608  source bashrc
+  609  ./greeter_async_client
+  610  gdb ./greeter_async_client
+  611  ls
+  612  gdb ./greeter_async_client
+  613  ls
+  614  tmux a -t 0
+  615  tmux a -t 1
+  616  tmux a -t 0
+  617  tmux a -t 0
+  618  tmux a -t 1
+  619  tmux a -t 0
+  620  tmux a -t 1
+  621  ls
+  622  ip a
+  623  systemctl
+  624  sudo crontab 
+  625  fish 
+  626  sudo -i
+  627  ls
+  628  tmux a -t 0
+  629  ls
+  630  cd examples/
+  631  ls
+  632  cd cpp/
+  633  source bashrc 
+  634  ls
+  635  ./greeter_async_client
+  636  gdb ./greeter_async_client
+  637  ls
+  638  cd ..
+  639  ls
+  640  cd helloworld
+  641  cd ..
+  642  cd helloworld_orign/
+  643  ls
+  644  history 
+  645  ls
+  646  history | grep export
+  647  export MALLOC_CHECK_=3
+  648  export CPPFLAGS='-g '
+  649  export CXXFLAGS='-g '
+  650  export CFLAGS='-g '
+  651  cd ../../..
+  652  make clean
+  653  make -j16
+  654  cd -
+  655  ls
+  656  cd ..
+  657  lsc
+  658  cd helloworld
+  659  ls
+  660  make clean
+  661  make 
+  662  ./greeter_async_client
+  663  make 
+  664  make clean
+  665  vim Makefile 
+  666  make clean
+  667  make 
+  668  vim Makefile 
+  669  make clean
+  670  ls
+  671  vim Makefile 
+  672  ssh node336
+  673  vim Makefile 
+  674  gdb ./greeter_async_client
+  675  ./greeter_async_client
+  676  make 
+  677  vim Makefile 
+  678  make 
+  679  vim Makefile 
+  680  ssh node336
+  681  ls
+  682  gdb ./greeter_async_client
+  683  ls
+  684  gdb ./greeter_async_client
+  685  ls
+  686  source bashrc 
+  687  gdb ./greeter_async_client
+  688  cd ..
+  689  ls
+  690  c helloworld
+  691  cd helloworld_
+  692  cd helloworld_orign/
+  693  ls
+  694  source bashrc 
+  695  ./greeter_async_server 
+  696  ./greeter_async_server &
+  697  ./greeter_async_client
+  698  gdb ./greeter_async_client
+  699  kill %1
+  700  kill %2
+  701  ls
+  702  cd ..
+  703  ls
+  704  cd ..
+  705  ls
+  706  cd ..
+  707  ls
+  708  export LD_LIBRARY_PATH=''
+  709  echo $LD_LIBRARY_PATH 
+  710  export CFLAGS='-lrdmacm -libverbs -lpthread
+  711  '
+  712  export CxxFLAGS='-lrdmacm -libverbs -lpthread
+  713  '
+  714  export CXXFLAGS='-lrdmacm -libverbs -lpthread
+  715  '
+  716  export CPPFLAGS='-lrdmacm -libverbs -lpthread
+  717  '
+  718  make clean
+  719  make 
+  720  make clean
+  721  make 
+  722  source bashrc 
+  723  ./greeter_async_client
+  724  cd examples/
+  725  ls
+  726  cd cpp/
+  727  ls
+  728  cd helloworld
+  729  ls
+  730  source bashrc 
+  731  ls
+  732  make 
+  733  make clean
+  734  make 
+  735  ls
+  736  vim Makefile 
+  737  ls
+  738  source 
+  739  ls
+  740  source bashrc 
+  741  ls
+  742  gcc *.o -lrdmacm -libverbs -lpthread
+  743  ls
+  744  for i in `ls *.o` ;do gcc $i -lrdmacm -libverbs -lpthread;done
+  745  for i in  ;do gcc $i -lrdmacm -libverbs -lpthread;done
+  746  ls
+  747  for i in greeter_client.o ;do gcc $i -lrdmacm -libverbs -lpthread;done
+  748  ls
+  749  ls *.o
+  750  for i in greeter_client.o ;do gcc $i helloworld.grpc.pb.o helloworld.pb.o  -lrdmacm -libverbs -lpthread;done
+  751  vim Makefile 
+  752  make 
+  753  ls
+  754  ./greeter_async_server 
+  755  cd ../..
+  756  ls
+  757  cd ..
+  758  ls
+  759  export CFLAGS='-lrdmacm -libverbs -lpthread'
+  760  export CXXFLAGS='-lrdmacm -libverbs -lpthread'
+  761  export CPPFLAGS='-g -lrdmacm -libverbs -lpthread'
+  762  export CXXFLAGS='-g -lrdmacm -libverbs -lpthread'
+  763  export CFLAGS='-g -lrdmacm -libverbs -lpthread'
+  764  make clean
+  765  make 
+  766  nm /home/uniquesc/likaixi/grpc/libs/opt/libgrpc.a | grep rdma| less
+  767  nm /home/uniquesc/likaixi/grpc/libs/opt/libgrpc.a | grep rdma_accept  | less
+  768  nm /home/uniquesc/likaixi/grpc/libs/opt/libgrpc.a | grep rdma | less
+  769  cd examples/
+  770  cd cpp/
+  771  ls
+  772  cd helloworld
+  773  ls
+  774  make clean
+  775  make 
+  776  ./greeter_async_server 
+  777  gcc helloworld.pb.o helloworld.grpc.pb.o greeter_async_server.o -L/usr/local/lib -L/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/ -L/home/uniquesc/likaixi/grpc/libs/opt -lgrpc -lgrpc++`pkg-config --libs grpc++ grpc` -lprotobuf -lpthread -ldl -lssl -g -lrdmacm -libverbs -lpthread -o greeter_async_server
+  778  cd -
+  779  cd ../,,
+  780  cd ..
+  781  l
+  782  ls
+  783  echo $CFLAGS
+  784  cd examples/cpp/helloworld
+  785  ls
+  786  source bashrc 
+  787  vim bashrc 
+  788  export CXXFLAGS='-fPIC -g -lrdmacm -libverbs -lpthread'
+  789  export CFLAGS='-fPIC -g -lrdmacm -libverbs -lpthread'
+  790  export CppFLAGS='-fPIC -g -lrdmacm -libverbs -lpthread'
+  791  export CPPFLAGS='-fPIC -g -lrdmacm -libverbs -lpthread'
+  792  ls
+  793  make clean
+  794  gcc helloworld.pb.o helloworld.grpc.pb.o greeter_async_server.o -L/usr/local/lib -L/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/ -L/home/uniquesc/likaixi/grpc/libs/opt -lgrpc -lgrpc++`pkg-config --libs grpc++ grpc` -lprotobuf -lpthread -ldl -lssl -g -lrdmacm -libverbs -lpthread -o greeter_async_server
+  795  make 
+  796  export CPPFLAGS='-static -fPIC -g -lrdmacm -libverbs -lpthread'
+  797  export CFLAGS='-static -fPIC -g -lrdmacm -libverbs -lpthread'
+  798  export CXXFLAGS='-static -fPIC -g -lrdmacm -libverbs -lpthread'
+  799  ls
+  800  make clean
+  801  make -j
+  802  ls
+  803  ./greeter_async_server 
+  804  ./greeter_async_server &
+  805  ./greeter_async_client
+  806  kill %!
+  807  kill %1
+  808  vim Makefile 
+  809  gdb ./greeter_async_client
+  810  cd -
+  811  ls
+  812  make clean
+  813  echo $CFLAGS 
+  814  make clean
+  815  cd -
+  816  ls
+  817  ./greeter_async_client
+  818  cd -
+  819  ls
+  820  cd ..
+  821  cd grpc/
+  822  ls
+  823  make -j
+  824  echo $CFLAGS
+  825  echo CC=gcc
+  826  echo CXX=g++
+  827  MAKE 
+  828  make 
+  829  cd /home/uniquesc/likaixi/grpc/third_party/protobuf/
+  830  ls
+  831  ./configure 
+  832  vim config.log 
+  833  echo $CFLAGS
+  834  locate librdmacm
+  835  locate librdmacm.a
+  836  locate librdmacm.so
+  837  echo $CFLAGS
+  838  export CFLAGS='-g -Wl,--start-group -L/usr/lib64/ -lrdmacm -libverbs -lpthread  -Wl,--end-group'
+  839  make clean
+  840  ./configure 
+  841  vim config.log 
+  842  locate libverbs.so
+  843  locate libverbs
+  844  locate libibverbs
+  845  locate libibverbs.so
+  846  yum install ibverbs
+  847  sud oyum install ibverbs
+  848  sudo \yum install ibverbs
+  849  sudo yum install ibverbs
+  850  locate libibverbs.so
+  851  export CFLAGS='-g -Wl,--start-group -L/usr/lib64/ -lrdmacm -libverbs -lpthread  -Wl,--end-group'
+  852  export CXXLAGS='-g -Wl,--start-group -L/usr/lib64/ -lrdmacm -libverbs -lpthread  -Wl,--end-group'
+  853  export CPPLAGS='-g -Wl,--start-group -L/usr/lib64/ -lrdmacm -libverbs -lpthread  -Wl,--end-group'
+  854  ./configure 
+  855  vim config.log 
+  856  locate libibverbs.so
+  857  locate libibverbs.a
+  858  locate libibverbs
+  859  export CPPLAGS='-g  -L/usr/lib64/ -lrdmacm -libverbs -lpthread '
+  860  ./configure 
+  861  vim config.log 
+  862  export CLAGS='-g  -L/usr/lib64/ -lrdmacm -libverbs -lpthread '
+  863  ./configure 
+  864  vim config.log 
+  865  export CFLAGS='-g  -L/usr/lib64/ -lrdmacm -libverbs -lpthread '
+  866  ./configure 
+  867  export CFLAGS='-g -L/usr/lib64/ -lrdmacm -libverbs -lpthread'
+  868  ./configure 
+  869  export CFLAGS='-g -L/usr/lib64/ -lrdmacm -libverbs -lpthread'
+  870  ./configure 
+  871  vim config.log 
+  872  ./configure 
+  873  make 
+  874  make -j
+  875  ls
+  876  cd ../../..
+  877  ls
+  878  cd ..
+  879  ls
+  880  cd ..
+  881  ls
+  882  cd grpc/
+  883  ls
+  884  echo $CFLAGS
+  885  echo $CFLAG
+  886  echo $CFLAGS
+  887  export CFLAGS='-g -lrdamcm -libverbs'
+  888  export CPPLAGS='-g -lrdamcm -libverbs'
+  889  export CPPFLAGS='-g -lrdamcm -libverbs'
+  890  export CXXFLAGS='-g -lrdamcm -libverbs'
+  891  export LDFLAGS='-g -lrdamcm -libverbs'
+  892  locate libibverbs
+  893  export LDFLAGS='-g                                                         │ *addr, int fd) { -L/usr/lib/debug/usr/lib64/ -lrdamcm -libverbs '
+  894  export LDFLAGS='-g -Wl,--start-group -lrdamcm -libverbs -Wl,--end-group'
+  895  export CFLAGS='-g -Wl,--start-group -lrdamcm -libverbs -Wl,--end-group'
+  896  export CXXFLAGS='-g -Wl,--start-group -lrdamcm -libverbs -Wl,--end-group'
+  897  export CPPFLAGS='-g -Wl,--start-group -lrdamcm -libverbs -Wl,--end-group'
+  898  make clean
+  899  export LDFLAGS='-g -Wl,--start-group /usr/lib/debug/usr/lib64/  -lrdamcm -libverbs -Wl,--end-group'
+  900  export LDFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdamcm -libverbs -Wl,--end-group'
+  901  export CFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdamcm -libverbs -Wl,--end-group'
+  902  export CXXFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdamcm -libverbs -Wl,--end-group'
+  903  export CPPFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdamcm -libverbs -Wl,--end-group'
+  904  make clean
+  905  make 
+  906  cd cd /home/uniquesc/likaixi/grpc/libs/opt/protobuf/
+  907  cd /home/uniquesc/likaixi/grpc/libs/opt/protobuf/
+  908  cd /home/uniquesc/likaixi/grpc/third_party/protobuf
+  909  ls
+  910  cd ../..
+  911  ls
+  912  make 
+  913  cd /home/uniquesc/likaixi/grpc/third_party/
+  914  cd protobuf/
+  915  ls
+  916  ./configure 
+  917  vim config.log 
+  918  locate librdamcm
+  919  locate rdamcm
+  920  locate lib rdamcm
+  921  locate librdamcm
+  922  locate rdamcm
+  923  sudo updatedb
+  924  locate rdamcm
+  925  sudo yum-install rdmacm
+  926  sudo yum install rdmacm
+  927  sudo yum search rdmacm
+  928  locate rdmacm
+  929  locate rdamcm
+  930  locate rdmacm
+  931  locate librdmacm
+  932  sudo yum search rdmacm
+  933  sudo yum install librdmacm-debuginfo
+  934  sudo yum install librdmacm-devel
+  935  sudo yum install librdmacm
+  936  vim config.log 
+  937  export CPPFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  938  export CFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  939  export CXXFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  940  export LDFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  941  ./configure 
+  942  vim config.log 
+  943  export LDFLAGS='-g -Wl,--start-group  -lrdmacm -libverbs -Wl,--end-group'
+  944  export CFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  945  export CPPFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  946  export CXXFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/  -lrdmacm -libverbs -Wl,--end-group'
+  947  ./configure 
+  948  vim config.log 
+  949  export CFLAGS='-g -Wl,--start-group -lrdmacm -libverbs -Wl,--end-group'
+  950  export CPPFLAGS='-g -Wl,--start-group -lrdmacm -libverbs -Wl,--end-group'
+  951  export CXXFLAGS='-g -Wl,--start-group -lrdmacm -libverbs -Wl,--end-group'
+  952  export LDFLAGS='-g -Wl,--start-group -lrdmacm -libverbs -Wl,--end-group'
+  953  ./configure 
+  954  cd ..
+  955  ls
+  956  cd ..
+  957  make clean
+  958  make -j
+  959  cd examples/cpp/helloworld
+  960  ls
+  961  vim Makefile 
+  962  echo $LDFLAGS 
+  963  locate librdmacm
+  964  locate librdmacm | grep debug
+  965  vim Makefile 
+  966  make 
+  967  vim bashrc 
+  968  source bashrc 
+  969  ls
+  970  make 
+  971  make clean
+  972  make 
+  973  locate librdmacm
+  974  vim bashrc 
+  975  vim Makefile 
+  976  make 
+  977  ls
+  978  locate libibverbs
+  979  locate libibverbs.so
+  980  locate libibverbs.a
+  981  vim Makefile 
+  982  make 
+  983  echo $CXXFLAGS 
+  984  export CXXFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  985  export CFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  986  export CPPLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  987  export LDFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  988  export CPPFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  989  export CXXFLAGS='-g -Wl,--start-group -L/usr/lib/debug/usr/lib64/ -L/usr/lib64/ -lrdmacm -libverbs -Wl,--end-group'
+  990  ls
+  991  make clean
+  992  make 
+  993  export CXXFLAGS=''
+  994  export CFLAGS=''
+  995  export LDFLAGS=''
+  996  make 
+  997  ls
+  998  echo $LD_LIBRARY_PATH
+  999  ls
+ 1000  cd  ~/likaixi/grpc/examples/cpp/helloworld
+ 1001  ls
+ 1002  make 
+ 1003  source bashrc 
+ 1004  make 
+ 1005  echo $LD_LIBRARY_PATH 
+ 1006  sudo ldconfig
+ 1007  vim /etc/ld.so.conf
+ 1008  cat /etc/ld.so.conf.d/*
+ 1009  locate lib
+ 1010  find . -name 'lib*'
+ 1011  find / -name 'lib*'
+ 1012  ls
+ 1013  ls /usr/lib
+ 1014  ls /usr/lib64
+ 1015  ls /usr/lib64 /usr/local/lib
+ 1016  vim bashrc 
+ 1017  locate libc
+ 1018  locate libc.so
+ 1019  make 
+ 1020  source bashrc 
+ 1021  make 
+ 1022  ls /usr/lib64/libc.so
+ 1023  echo LIBRARAY_PATH
+ 1024  echo $LIBARAY_PATH
+ 1025  LIBRArY_PATH
+ 1026  ECHO $LIBRArY_PATH
+ 1027  echo $LIBRArY_PATH
+ 1028  echo $LIBRARY_PATH
+ 1029  man LIBRARY_PATH
+ 1030  man PATH
+ 1031  vim bashrc 
+ 1032  source bashrc 
+ 1033  make 
+ 1034  locate libssl
+ 1035  vim bashrc 
+ 1036  locate libssl.a
+ 1037  vim bashrc 
+ 1038  make 
+ 1039  vim Makefile 
+ 1040  make 
+ 1041  vim Makefile 
+ 1042  make 
+ 1043  ./greeter_async_server &
+ 1044  ./greeter_async_client
+ 1045  history 
+ 1046  history > history

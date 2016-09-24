@@ -193,9 +193,10 @@ void RunServer(const std::string& db_path) {
   server->Wait();
 }
 
+  std::string db;
 int main(int argc, char** argv) {
   // Expect only arg: --db_path=path/to/route_guide_db.json.
-  std::string db = routeguide::GetDbFileContent(argc, argv);
+  db = routeguide::GetDbFileContent(argc, argv);
   RunServer(db);
 
   return 0;

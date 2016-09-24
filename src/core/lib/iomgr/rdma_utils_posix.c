@@ -28,10 +28,10 @@ void rdma_ctx_unref(grpc_exec_ctx *exec_ctx, struct connect_context *context) {
 }
 
 void rdma_ctx_ref(struct connect_context *context) { 
-  gpr_ref(&context->refcount); }
+  gpr_ref(&context->refcount); 
+}
 
 void rdma_ctx_free(grpc_exec_ctx *exec_ctx, struct connect_context *context) {
-  gpr_log(GPR_DEBUG,"RDMA_CONTEXT DESTROYED");
   grpc_fd_orphan(exec_ctx,context->sendfdobj,NULL,NULL,"RDMACTX_FREE");
   grpc_fd_orphan(exec_ctx,context->recvfdobj,NULL,NULL,"RDMACTX_FREE");
   ibv_dereg_mr(context->recv_buffer_mr); 
@@ -46,5 +46,4 @@ void rdma_ctx_free(grpc_exec_ctx *exec_ctx, struct connect_context *context) {
 
   rdma_destroy_id(context->id);
   gpr_free(context);
-  gpr_log(GPR_DEBUG,"rdma_ctx_free FREED");
 }

@@ -33,6 +33,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <cstdio>
 #include <memory>
 #include <random>
 #include <string>
@@ -88,6 +89,9 @@ class RouteGuideClient {
       : stub_(RouteGuide::NewStub(channel)) {
     routeguide::ParseDb(db, &feature_list_);
   }
+  RouteGuideClient(std::shared_ptr<Channel> channel)
+      : stub_(RouteGuide::NewStub(channel)) {
+  }
 
   void GetFeature() {
     Point point;
@@ -137,7 +141,7 @@ class RouteGuideClient {
     std::uniform_int_distribution<int> feature_distribution(
         0, feature_list_.size() - 1);
     std::uniform_int_distribution<int> delay_distribution(
-        500, 1500);
+        5, 15);
 
     std::unique_ptr<ClientWriter<Point> > writer(
         stub_->RecordRoute(&context, &stats));
@@ -231,8 +235,10 @@ class RouteGuideClient {
 };
 
 int main(int argc, char** argv) {
+  //freopen("output.txt","w",stdout);
   // Expect only arg: --db_path=path/to/route_guide_db.json.
   std::string db = routeguide::GetDbFileContent(argc, argv);
+  //std::cout<<db<<std::endl;
   RouteGuideClient guide(
       grpc::CreateChannel("localhost:50051",
                           grpc::InsecureChannelCredentials()),
@@ -246,6 +252,7 @@ int main(int argc, char** argv) {
   guide.RecordRoute();
   std::cout << "-------------- RouteChat --------------" << std::endl;
   guide.RouteChat();
-
+  //std::cout<<"================================================================"<<std::endl;
+  //std::cout<<db<<std::endl;
   return 0;
 }

@@ -30,9 +30,12 @@
 #
 
 CXX = g++
-CPPFLAGS += -I/usr/local/include -pthread
-CXXFLAGS += -std=c++11
-LDFLAGS += -L/usr/local/lib `pkg-config --libs grpc++ grpc` -lprotobuf -lpthread -ldl
+CPPFLAGS += -I/usr/local/include -pthread -I/home/uniquesc/likaixi/grpc/third_party/protobuf/src/ -I/home/uniquesc/likaixi/grpc/include -I/home/uniquesc/likaixi/grpc/src -g -lrdmacm -libverbs -lpthread -L/home/uniquesc/likaixi/rdma_grpc/build/third_party/boringssl/ssl/
+
+CXXFLAGS += -std=c++11 
+#LDFLAGS += -L/usr/local/lib -L/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/ -L/home/uniquesc/likaixi/grpc/libs/opt -lgrpc -lgrpc++`pkg-config --libs grpc++ grpc` -lprotobuf -lpthread -ldl -lssl -g -lrdmacm -libverbs -lpthread
+LDFLAGS += -L/usr/lib64 -L/usr/local/lib -L/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/ -L/home/uniquesc/likaixi/grpc/libs/opt -lgrpc -lgrpc++ -lprotobuf -lpthread -ldl -lssl -g -lrdmacm -libverbs -lpthread 
+
 PROTOC = protoc
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`

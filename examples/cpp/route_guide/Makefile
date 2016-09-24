@@ -25,15 +25,18 @@
 # LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+#`pkg-config --libs grpc++`
 CXX = g++
-CPPFLAGS += -I/usr/local/include -pthread
+CPPFLAGS += -I/usr/local/include -pthread -I/home/uniquesc/likaixi/grpc/third_party/protobuf/src/ -I/home/uniquesc/likaixi/grpc/include -I/home/uniquesc/likaixi/grpc/src -g -lrdmacm -libverbs -lpthread -L/home/uniquesc/likaixi/rdma_grpc/build/third_party/boringssl/ssl/ -O0
 CXXFLAGS += -std=c++11
-LDFLAGS += -L/usr/local/lib `pkg-config --libs grpc++` -lprotobuf -lpthread -ldl
-PROTOC = protoc
+LDFLAGS += -L/usr/local/lib  -lprotobuf -lpthread -ldl -L/home/uniquesc/likaixi/grpc/third_party/protobuf/src/.libs/ -L/home/uniquesc/likaixi/grpc/libs/opt -lgrpc -lgrpc++ -lprotobuf -lpthread -lssl -g -lrdmacm -libverbs -lpthread
+
+
+PROTOC = protoc 
 GRPC_CPP_PLUGIN = grpc_cpp_plugin
 GRPC_CPP_PLUGIN_PATH ?= `which $(GRPC_CPP_PLUGIN)`
 

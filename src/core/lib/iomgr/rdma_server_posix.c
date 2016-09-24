@@ -689,6 +689,10 @@ static void grpc_rdma_server_on_event(grpc_exec_ctx *exec_ctx,
             rdma_ack_cm_event(event);
             ret = on_disconnect(exec_ctx, id);
             break;
+        case RDMA_CM_EVENT_TIMEWAIT_EXIT:
+	    gpr_log(GPR_DEBUG,"Server: TIMEWAIT_EXIT");
+	    ret=0;
+            break;
         default:
 	    gpr_log(GPR_ERROR, "Server: on_event Unknow RDMA_CM_EVENT:%d", event->event);
             ret = -1;
@@ -700,7 +704,6 @@ static void grpc_rdma_server_on_event(grpc_exec_ctx *exec_ctx,
     }
     return;
 error:
-    gpr_log(GPR_ERROR, "Server:Get error");
     gpr_mu_lock(&sp->server->mu);
     if (0 == --sp->server->active_ports) {
         gpr_mu_unlock(&sp->server->mu);

@@ -46,30 +46,35 @@ void die(const char *reason);
 #define TEST_NZ(x) do { if ( (x)) die("error: " #x " failed (returned non-zero)." ); } while (0)
 #define TEST_Z(x)  do { if (!(x)) die("error: " #x " failed (returned zero/null)."); } while (0)
 
-#define INIT_RECV_BUFFER_SIZE 256
-#define RDMA_POST_RECV_NUM 64
-//More than 1!!!!!!!!!!!
-
+#define INIT_RECV_BUFFER_SIZE (sizeof(rdma_memory_region))
+#define RDMA_MSG_CONTENT_SIZE 2048
+#define RDMA_POST_RECV_NUM 16
+typedef struct{
+  int msg_info;
+  size_t msg_len;
+  char msg_content[RDMA_MSG_CONTENT_SIZE];
+} rdma_message;
+typedef struct{
+  int msg_info;
+  size_t msg_len;
+  char msg_content[2];
+} rdma_smessage;//In order to keep the same structure of rdma_message
+typedef struct{
+  rdma_message msg;
+  rdma_smessage sms;
+} rdma_memory_region;
 typedef struct connect_context connect_context;
 struct connect_context {
     grpc_fd *sendfdobj;/*int pollfd;*/
     grpc_fd *recvfdobj;/*int pollfd;*/
-//    grpc_fd *ctl_objfd_s;
-//    grpc_fd *ctl_objfd_r;
     int sendfd;
     int recvfd;
-//    int ctl_fd_s;
-//    int ctl_fd_r;
 
     struct rdma_cm_id *id;
-//    struct rdma_cm_id *ctl_id;
     struct ibv_qp *qp;
-//    struct ibv_qp *ctl_qp;
 
     struct ibv_mr *recv_buffer_mr;
-//    struct ibv_mr *ctl_rbuf_mr;
     struct ibv_mr *send_buffer_mr;
-//    struct ibv_mr *ctl_sbuf_mr;
     char *recv_buffer_region;
     char *send_buffer_region;
 
@@ -77,13 +82,9 @@ struct connect_context {
     struct ibv_pd *ctl_pd;
 
     struct ibv_cq *send_cq;
-//    struct ibv_cq *ctl_cq_s;
     struct ibv_cq *recv_cq;
-//    struct ibv_cq *ctl_cq_r;
     struct ibv_comp_channel *recv_comp_channel;
-//    struct ibv_comp_channel *ctl_cchannel_r;
     struct ibv_comp_channel *send_comp_channel;
-//    struct ibv_comp_channel *ctl_cchannel_s;
 
     grpc_endpoint *ep;
     grpc_closure *closure;

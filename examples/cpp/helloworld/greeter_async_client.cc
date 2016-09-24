@@ -119,9 +119,21 @@ int main(int argc, char** argv) {
   // (use of InsecureChannelCredentials()).
   GreeterClient greeter(grpc::CreateChannel(
       "localhost:50051", grpc::InsecureChannelCredentials()));
-  std::string user("world");
-  std::string reply = greeter.SayHello(user);  // The actual RPC call!
-  std::cout << "Greeter received: " << reply << std::endl;
+  std::string user1("world1");
+  std::string user2("world2");
+  std::string user3("world3");
+  std::string user4("world4");
+  std::string user5("world5");
+  std::string reply1 = greeter.SayHello(user1);  // The actual RPC call!
+  std::cout << "Greeter received: " << reply1 << std::endl;
+  std::string reply2 = greeter.SayHello(user2);  // The actual RPC call!
+  std::cout << "Greeter received: " << reply2 << std::endl;
+  std::string reply3 = greeter.SayHello(user3);  // The actual RPC call!
+  std::cout << "Greeter received: " << reply3 << std::endl;
+  std::string reply4 = greeter.SayHello(user4);  // The actual RPC call!
+  std::cout << "Greeter received: " << reply4 << std::endl;
+  std::string reply5 = greeter.SayHello(user5);  // The actual RPC call!
+  std::cout << "Greeter received: " << reply5 << std::endl;
 
   return 0;
 }

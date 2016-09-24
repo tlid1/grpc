@@ -127,7 +127,6 @@ static void tc_on_alarm(grpc_exec_ctx *exec_ctx, void *acp, grpc_error *error) {
      */
   gpr_mu_lock(&ac->mu);
   done = (--ac->refs == 0);
-  gpr_log(GPR_INFO,"ac->refs:%d",ac->refs);
   if (ac->connected == 0) {
     if (ac->connectfd != NULL) {
       grpc_fd_shutdown(exec_ctx, ac->connectfd);
@@ -137,7 +136,6 @@ static void tc_on_alarm(grpc_exec_ctx *exec_ctx, void *acp, grpc_error *error) {
   gpr_mu_unlock(&ac->mu);
 
   if (done) {
-    gpr_log(GPR_INFO,"here");
     if (ac->addr_str != NULL) {
       gpr_free(ac->addr_str);
       ac->addr_str = NULL;
@@ -149,8 +147,7 @@ static void tc_on_alarm(grpc_exec_ctx *exec_ctx, void *acp, grpc_error *error) {
       ac = NULL;
     } 
   } else {
-    gpr_log(GPR_INFO,"here");
-    ac->write_closure.cb(exec_ctx, ac->write_closure.cb_arg, GRPC_ERROR_NONE);
+    //ac->write_closure.cb(exec_ctx, ac->write_closure.cb_arg, GRPC_ERROR_NONE);
   }
 }
 
@@ -231,8 +228,9 @@ static int on_addr_resolved(struct rdma_cm_id *id) {
 
   //register_memory(conn);
   recv_buffer_region = gpr_malloc(INIT_RECV_BUFFER_SIZE * RDMA_POST_RECV_NUM);
-  memset(recv_buffer_region,0,INIT_RECV_BUFFER_SIZE * RDMA_POST_RECV_NUM);
+  //memset(recv_buffer_region,0,INIT_RECV_BUFFER_SIZE * RDMA_POST_RECV_NUM);
   send_buffer_region = gpr_malloc(INIT_RECV_BUFFER_SIZE);
+  
 
   if((recv_buffer_mr = ibv_reg_mr(
           pd,
@@ -243,6 +241,7 @@ static int on_addr_resolved(struct rdma_cm_id *id) {
     gpr_log(GPR_ERROR, "Client: ibv_reg_mr() failed: %s",strerror(errno));
     return -1;
   }
+
 
   if((send_buffer_mr = ibv_reg_mr(
           pd,
@@ -325,11 +324,9 @@ static int on_addr_resolved(struct rdma_cm_id *id) {
 }
 
 static int on_disconnect(grpc_exec_ctx *exec_ctx, struct rdma_cm_id *id) {
-  gpr_log(GPR_DEBUG, "Client: on_disconnect freed");
   struct connect_context *context = (struct connect_context *)id->context;
   context->closure=NULL;
   if (context->refcount.count >= 2) {
-    gpr_log(GPR_DEBUG,"Sentence_Death");
     grpc_rdma_sentence_death(exec_ctx, context->ep);
   }
   //ibv_dereg_mr(context->recv_buffer_mr); 
@@ -452,8 +449,6 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
   return;
 
 error:
-  gpr_log(GPR_DEBUG, "Client:Get error");
-  gpr_log(GPR_ERROR, "Client:Call cb with error");
   //grpc_timer_cancel(exec_ctx, &ac->alarm);
   error = grpc_error_set_str(error, 
       GRPC_ERROR_STR_DESCRIPTION, "Failed to connect to remote host");
@@ -464,7 +459,6 @@ error:
   ac->cb_called = 1;
 
 done:
-  gpr_log(GPR_DEBUG, "Client:Get done");
   //if (id != NULL) {
   //  if (id->verbs->device)
   //  {}//FIXME//rdma_disconnect(id);
@@ -477,7 +471,6 @@ done:
 
   gpr_mu_lock(&ac->mu);
   done = (--ac->refs == 0);
-  gpr_log(GPR_INFO,"ac->refs:%d",ac->refs);
   gpr_mu_unlock(&ac->mu);
   if (done) {
     if (ac->addr_str != NULL) {

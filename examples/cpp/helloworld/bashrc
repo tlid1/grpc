@@ -1,0 +1,3 @@
+export PATH=${PATH}:/home/uniquesc/likaixi/grpc/bins/opt/protobuf/:/home/uniquesc/likaixi/grpc/bins/opt/
+export LD_LIBRARY_PATH=/home/uniquesc/likaixi/rdma_grpc/build/third_party/boringssl/ssl/:/usr/lib64:/usr/local/lib:/usr/lib/debug/usr/lib64/:${LD_LIBRARY_PATH}:/home/uniquesc/likaixi/grpc/libs/opt/
+export LIBRARY_PATH=/home/uniquesc/likaixi/rdma_grpc/build/third_party/boringssl/ssl/:/usr/lib64:/usr/local/lib:/usr/lib/debug/usr/lib64/:${LD_LIBRARY_PATH}:/home/uniquesc/likaixi/grpc/libs/opt/

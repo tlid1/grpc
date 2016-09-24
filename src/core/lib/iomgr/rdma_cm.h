@@ -50,7 +50,6 @@
 //#include ???.h connect_context's decl !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //#define GRPC_TCP_DEFAULT_READ_SLICE_SIZE 2048
-#define RDMA_MSG_CONTENT_SIZE INIT_RECV_BUFFER_SIZE - 10
 
 extern int grpc_tcp_trace;
 
@@ -59,11 +58,9 @@ extern int grpc_tcp_trace;
 grpc_endpoint *grpc_rdma_create(connect_context* context,
                                const char *peer_string);
 
-typedef struct{
-  int msg_info;
-  char msg_content[RDMA_MSG_CONTENT_SIZE];
-} rdma_message;
 #define MSGINFO_MESSAGE 0
+#define SENDCONTEXT_DATA 0
+#define SENDCONTEXT_SMS 1
 /* Return the tcp endpoint's fd, or -1 if this is not available. Does not
    release the fd.
    Requires: ep must be a tcp endpoint.
