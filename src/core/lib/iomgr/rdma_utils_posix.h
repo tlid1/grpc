@@ -58,7 +58,7 @@ void die(const char *reason);
 
 #define INIT_RECV_BUFFER_SIZE (sizeof(rdma_memory_region))
 #define RDMA_MSG_CONTENT_SIZE 2048
-#define RDMA_POST_RECV_NUM 128
+#define RDMA_POST_RECV_NUM 64
 typedef struct{
   int msg_info;
   size_t msg_len;
