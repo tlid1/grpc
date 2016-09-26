@@ -513,8 +513,6 @@ static void rdma_client_connect_impl(grpc_exec_ctx *exec_ctx,
   //memset(&addrx,0,sizeof(struct sockaddr_in));
   //addrx.sin_family=AF_INET;
   //grpc_sockaddr_set_port((const struct sockaddr *)&addrx,port);
-  //test_print_addr(&addrx); //FIXME
-
 
   //test_print_addr(addr); //FIXME
   /* Use dualstack sockets where available. */
@@ -533,6 +531,9 @@ static void rdma_client_connect_impl(grpc_exec_ctx *exec_ctx,
     rdma_destroy_event_channel(ec);
     return;
   }
+
+  gpr_log(GPR_DEBUG, "rdma_client_connect_impl");
+  grpc_rdma_util_print_addr(addr);
 
   if (rdma_resolve_addr(conn, NULL, (struct sockaddr *)addr, gpr_time_to_millis(deadline)) != 0) {
     grpc_exec_ctx_sched(exec_ctx, closure, GRPC_OS_ERROR(errno, "rdma_resolve_addr"), NULL);

@@ -14,6 +14,23 @@
 
 #include "src/core/lib/iomgr/rdma_utils_posix.h" 
 void rdma_ctx_free(grpc_exec_ctx *exec_ctx, connect_context *);
+void grpc_rdma_util_print_addr(const struct sockaddr *addr);
+
+void grpc_rdma_util_print_addr(const struct sockaddr *addr){
+  GPR_ASSERT( ((struct sockaddr*)addr)->sa_family == AF_INET ||  ((struct sockaddr*)addr)->sa_family == AF_INET6 );
+  char *addr_str;
+  grpc_sockaddr_to_string(&addr_str, (struct sockaddr *)addr, 1);
+  if ( ((struct sockaddr*)addr)->sa_family == AF_INET ) {
+	gpr_log(GPR_DEBUG,"ADDR: AF_INET addr:%s port:%d",addr_str,grpc_sockaddr_get_port((struct sockaddr *)addr));
+  }
+  else if ( ((struct sockaddr*)addr)->sa_family == AF_INET6 ) {
+	gpr_log(GPR_DEBUG,"ADDR: AF_INET6 addr:%s port:%d",addr_str,grpc_sockaddr_get_port((struct sockaddr *)addr));
+  }
+  gpr_free(addr_str);
+}
+
+
+
 void die(const char *reason) {
     fprintf(stderr, "%s\n", reason);
     fprintf(stderr, "%d", errno);

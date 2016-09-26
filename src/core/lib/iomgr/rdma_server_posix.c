@@ -80,21 +80,6 @@
 #include "src/core/lib/iomgr/rdma_cm.h"
 
 #define MIN_SAFE_ACCEPT_QUEUE_SIZE 100
-
-void test_print_addr(const struct sockaddr *addr){
-  GPR_ASSERT( ((struct sockaddr*)addr)->sa_family == AF_INET ||  ((struct sockaddr*)addr)->sa_family == AF_INET6 );
-  char *addr_str;
-  grpc_sockaddr_to_string(&addr_str, (struct sockaddr *)addr, 1);
-  if ( ((struct sockaddr*)addr)->sa_family == AF_INET ) {
-	gpr_log(GPR_DEBUG,"ADDR: to:AF_INET addr:%s port:%d",addr_str,grpc_sockaddr_get_port((struct sockaddr *)addr));
-  }
-  else if ( ((struct sockaddr*)addr)->sa_family == AF_INET6 ) {
-	gpr_log(GPR_DEBUG,"ADDR: AF_INET6 addr:%s port:%d",addr_str,grpc_sockaddr_get_port((struct sockaddr *)addr));
-  }
-
-  gpr_free(addr_str);
-}
-
 //static gpr_once s_init_max_accept_queue_size;
 //static int s_max_accept_queue_size;
 
@@ -731,6 +716,8 @@ static grpc_error *add_listener_to_server(grpc_rdma_server *s,
   struct rdma_cm_id *listener = NULL;
   struct rdma_event_channel *ec = NULL;
 
+  gpr_log(GPR_DEBUG, "add_listener_to_server");
+  grpc_rdma_util_print_addr(addr);
   if ((ec = rdma_create_event_channel()) == NULL) {
 	  //grpc_exec_ctx_sched(exec_ctx, closure, GRPC_OS_ERROR(errno, "rdma_create_event_channel"), NULL);
 	  return GRPC_OS_ERROR(errno, "rdma_create_event_channel");

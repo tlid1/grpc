@@ -40,6 +40,16 @@
 #include "src/core/lib/iomgr/error.h"
 #include "src/core/lib/iomgr/ev_posix.h"
 
+#include "src/core/lib/iomgr/iomgr_posix.h"
+#include "src/core/lib/iomgr/sockaddr_utils.h"
+#include "src/core/lib/iomgr/socket_utils_posix.h"
+#include "src/core/lib/iomgr/tcp_posix.h"
+#include "src/core/lib/iomgr/timer.h"
+#include "src/core/lib/iomgr/unix_sockets_posix.h"
+#include "src/core/lib/support/string.h"
+
+
+
 #include <grpc/support/sync.h>
 #include "src/core/lib/iomgr/endpoint.h"
 void die(const char *reason);
@@ -94,5 +104,6 @@ struct connect_context {
 
 void rdma_ctx_ref(connect_context *ctx);
 void rdma_ctx_unref(grpc_exec_ctx *exec_ctx, connect_context *ctx);
+void grpc_rdma_util_print_addr(const struct sockaddr *addr);
 
 #endif /* GRPC_CORE_LIB_IOMGR_RMDA_VERBS_UTILS_POSIX_H */
