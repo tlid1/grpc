@@ -141,6 +141,7 @@ static const char *error_str_name(grpc_error_strs key) {
     case GRPC_ERROR_STR_FILENAME:
       return "filename";
   }
+  return "rdma_added_str_anormal_termination";
   GPR_UNREACHABLE_CODE(return "unknown");
 }
 
@@ -149,7 +150,6 @@ static const char *error_time_name(grpc_error_times key) {
     case GRPC_ERROR_TIME_CREATED:
       return "created";
   }
-  return "rdma_added_str_anormal_termination";
   GPR_UNREACHABLE_CODE(return "unknown");
 }
 
@@ -215,7 +215,9 @@ void grpc_error_unref(grpc_error *err) {
 grpc_error *grpc_error_create(const char *file, int line, const char *desc,
                               grpc_error **referencing,
                               size_t num_referencing) {
-  grpc_error *err = gpr_malloc(sizeof(*err));
+  grpc_error *err;
+  gpr_log(GPR_DEBUG, "func grpc_error_create() sizeof(*err)=%d", (int)sizeof(*err));
+  err= gpr_malloc(sizeof(*err));
   if (err == NULL) {  // TODO(ctiller): make gpr_malloc return NULL
     return GRPC_ERROR_OOM;
   }
