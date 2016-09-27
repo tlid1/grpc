@@ -116,6 +116,7 @@ static const char *error_int_name(grpc_error_ints key) {
     case GRPC_ERROR_INT_HTTP_STATUS:
       return "http_status";
   }
+  return "rdma_added_int_anormal_termination";
   GPR_UNREACHABLE_CODE(return "unknown");
 }
 
@@ -148,6 +149,7 @@ static const char *error_time_name(grpc_error_times key) {
     case GRPC_ERROR_TIME_CREATED:
       return "created";
   }
+  return "rdma_added_str_anormal_termination";
   GPR_UNREACHABLE_CODE(return "unknown");
 }
 

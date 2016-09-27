@@ -57,7 +57,7 @@ void die(const char *reason);
 #define TEST_Z(x)  do { if (!(x)) die("error: " #x " failed (returned zero/null)."); } while (0)
 
 #define INIT_RECV_BUFFER_SIZE (sizeof(rdma_memory_region))
-#define RDMA_MSG_CONTENT_SIZE 16384
+#define RDMA_MSG_CONTENT_SIZE 524288
 #define RDMA_POST_RECV_NUM 64
 typedef struct{
   int msg_info;
