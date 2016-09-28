@@ -216,7 +216,6 @@ grpc_error *grpc_error_create(const char *file, int line, const char *desc,
                               grpc_error **referencing,
                               size_t num_referencing) {
   grpc_error *err;
-  gpr_log(GPR_DEBUG, "func grpc_error_create() sizeof(*err)=%d", (int)sizeof(*err));
   err= gpr_malloc(sizeof(*err));
   if (err == NULL) {  // TODO(ctiller): make gpr_malloc return NULL
     return GRPC_ERROR_OOM;

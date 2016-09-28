@@ -124,7 +124,7 @@ static void rdma_shutdown(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep) {
   grpc_fd_shutdown(exec_ctx,rdma->content->sendfdobj);
   grpc_fd_shutdown(exec_ctx,rdma->content->recvfdobj);
   rdma->msg_pending=false;
-  gpr_log(GPR_DEBUG,"ENDPOINT:FD CLOSED");
+  //gpr_log(GPR_DEBUG,"ENDPOINT:FD CLOSED");
   //grpc_exec_ctx_flush(exec_ctx);
 }
 
@@ -273,7 +273,8 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 	  int retry_count=0;
 	  while(0!=get_cqe_result){
 		  if(errno!=EAGAIN||retry_count>MAX_RETRY_COUNT){
-			  gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
+			  if (errno == 11) gpr_log(GPR_DEBUG,"Failed to get events from completion_queue.Errno=%d",errno);
+			  else gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
 			  //readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Failed to get events from completion_queue");
 			  readfd_notify(exec_ctx,rdma);
                           return;
@@ -439,7 +440,8 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 	  int retry_count=0;
 	  while(0!=get_cqe_result){
 		  if(errno!=EAGAIN||retry_count>MAX_RETRY_COUNT){
-			  gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
+			  if (errno == 11) gpr_log(GPR_DEBUG,"Failed to get events from completion_queue.Errno=%d",errno);
+			  else gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
 			  writeerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "handle_write get_cqe_result");//GRPC_OS_ERROR(errno,"handle_write");
 			  break;
 		  }
