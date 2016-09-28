@@ -439,7 +439,7 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
       break;
     default:
       gpr_log(GPR_ERROR, "Client: on_event Unknow RDMA_CM_EVENT:%d", event_handle.event);
-      error = grpc_error_set_str(error, GRPC_ERROR_STR_OS_ERROR, "Get Unknow RDMA_CN_EVENT");
+      error = grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Get Unknow RDMA_CM_EVENT");
       goto error;
       break;
   }

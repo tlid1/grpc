@@ -200,9 +200,9 @@ static void call_read_cb(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma,
 
   if (grpc_rdma_trace) {
     size_t i;
-    const char *str = grpc_error_string(error);
+    //const char *str = grpc_error_string(error);
     //gpr_log(GPR_DEBUG, "read: error=%s", str);
-    grpc_error_free_string(str);
+    //grpc_error_free_string(str);
     for (i = 0; i < rdma->incoming_buffer->count; i++) {
       char *dump = gpr_dump_slice(rdma->incoming_buffer->slices[i],
                                   GPR_DUMP_HEX | GPR_DUMP_ASCII);
@@ -253,10 +253,11 @@ static void* rdma_continue_read(grpc_exec_ctx *exec_ctx, grpc_rdma *rdma, struct
   }
 }
 #define MAX_RETRY_COUNT 2
-#define SLEEP_PERIOD 2
+#define SLEEP_PERIOD 200
 static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
                             grpc_error *error) {
   grpc_rdma *rdma = (grpc_rdma *)arg;
+  GRPC_ERROR_REF(error);
   grpc_error *readerr=error;
   struct ibv_cq *cq;
   struct ibv_wc wc;
@@ -264,7 +265,7 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
   void* ret;
   rdma_smessage* sms=NULL;
   readfd_notified(rdma);
-  if(rdma->dead) readerr=GRPC_ERROR_CREATE("EOF");
+  if(rdma->dead) readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "EOF");
   if(readerr==GRPC_ERROR_NONE) {
 	  void *ctx;
 	  unsigned events_completed=0;
@@ -273,11 +274,13 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 	  while(0!=get_cqe_result){
 		  if(errno!=EAGAIN||retry_count>MAX_RETRY_COUNT){
 			  gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
+			  //readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Failed to get events from completion_queue");
 			  readfd_notify(exec_ctx,rdma);
                           return;
+                          //break;
 		  }
 		  ++retry_count;
-		  usleep(SLEEP_PERIOD);
+		  //usleep(SLEEP_PERIOD);
 		  get_cqe_result=ibv_get_cq_event(rdma->content->recv_comp_channel,&cq,&ctx);
 	  }
 	  if(readerr==GRPC_ERROR_NONE){
@@ -292,13 +295,14 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 			  }else{
 				  gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d wrid=%d",wc.opcode,wc.status,(int)wc.wr_id);
 				  gpr_slice_buffer_reset_and_unref(rdma->incoming_buffer);
-				  if(!readerr) readerr=GRPC_ERROR_CREATE("Read Failed");
+				  if(!readerr) readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Read Failed");//GRPC_ERROR_CREATE("Read Failed");
 			  }
 		  }
 		  ibv_ack_cq_events(cq,events_completed);
 		  if(0!=ibv_req_notify_cq(cq,0)){
 			  gpr_log(GPR_ERROR,"Failed to require notifications.");
-			  readerr=GRPC_ERROR_CREATE("Require notification failed");
+			  readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Require notification failed");
+                          //GRPC_ERROR_CREATE("Require notification failed");
 		  }
 	  }
   }
@@ -420,10 +424,11 @@ static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) {
 static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
                              grpc_error *error) {
   grpc_rdma *rdma = (grpc_rdma *)arg;
+  GRPC_ERROR_REF(error);
   grpc_error *writeerr=error;
   //grpc_closure *cb;
   bool sendctx_has_data=0;
-  if(rdma->dead) writeerr=GRPC_ERROR_CREATE("Shutdown");
+  if(rdma->dead) writeerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Shutdown");// GRPC_ERROR_CREATE("Shutdown");
 
   if (writeerr == GRPC_ERROR_NONE) {
 	  void *ctx;
@@ -435,7 +440,7 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 	  while(0!=get_cqe_result){
 		  if(errno!=EAGAIN||retry_count>MAX_RETRY_COUNT){
 			  gpr_log(GPR_ERROR,"Failed to get events from completion_queue.Errno=%d",errno);
-			  writeerr=GRPC_OS_ERROR(errno,"handle_write");
+			  writeerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "handle_write get_cqe_result");//GRPC_OS_ERROR(errno,"handle_write");
 			  break;
 		  }
 		  ++retry_count;
@@ -447,7 +452,8 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 			  ++events_completed;
 			  if(wc.status!=IBV_WC_SUCCESS){
 			    gpr_log(GPR_ERROR,"An operation failed. OPCODE=%d status=%d wrid=%d",wc.opcode,wc.status,(int)wc.wr_id);
-			    if(!writeerr) writeerr=GRPC_ERROR_CREATE("Read Failed");
+			    //FIXME(likaixi added)
+			    if(!writeerr) writeerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Read Failed");//GRPC_ERROR_CREATE("Read Failed");
 			  }//else{
   			    //gpr_log(GPR_DEBUG,"A Message sent");
 			  //}
@@ -460,7 +466,7 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 		  ibv_ack_cq_events(cq,events_completed);
 		  if(0!=ibv_req_notify_cq(cq,0)){
 			  gpr_log(GPR_ERROR,"Failed to require notifications.");
-			  if(!writeerr) writeerr=GRPC_ERROR_CREATE("Notify Failed");
+			  if(!writeerr) writeerr= grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Notify Failed");//GRPC_ERROR_CREATE("Notify Failed");
 		  }
 	  }
   }
@@ -478,7 +484,7 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 			  else
 				  grpc_fd_notify_on_read(exec_ctx,rdma->content->sendfdobj,&rdma->write_closure);
 		  }else{
-	               //   gpr_log(GPR_DEBUG,"Lack of buffer,wait for a while");
+	                  //gpr_log(GPR_DEBUG,"Lack of buffer,wait for a while");
 	  	          readfd_notify(exec_ctx,rdma);
 		  }
 	  }else{
