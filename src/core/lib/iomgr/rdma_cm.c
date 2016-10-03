@@ -68,7 +68,6 @@
 #ifdef GPR_RDMA_TIME
 #include <stdio.h>
 #include <sys/time.h>
-FILE *fpt; 
 #endif
 
 
@@ -349,7 +348,7 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 
   gettimeofday( &end, NULL );
     int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(fpt, "rdma_handle_read %d\n", timeuse);
+  fprintf(stderr, "rdma_handle_read %d\n", timeuse);
 }
 
 static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -374,7 +373,7 @@ static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
   //
   gettimeofday( &end, NULL );
     int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(fpt, "rdma_read %d\n", timeuse);
+  fprintf(stderr, "rdma_read %d\n", timeuse);
 }
 static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_error *error){
 	if(rdma->write_cb==NULL) return;
@@ -520,7 +519,7 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
 
     gettimeofday( &end, NULL );
     int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-    fprintf(fpt, "rdma_handle_write %d\n", timeuse);
+    fprintf(stderr, "rdma_handle_write %d\n", timeuse);
 }
 
 static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -572,7 +571,7 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
 
   gettimeofday( &end, NULL );
     int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(fpt, "rdma_write %d\n", timeuse);
+  fprintf(stderr, "rdma_write %d\n", timeuse);
 }
 
 static void rdma_add_to_pollset(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -609,7 +608,6 @@ static const grpc_endpoint_vtable vtable = {
 
 grpc_endpoint *grpc_rdma_create(connect_context *c_ctx,
                                const char *peer_string) {
-  fpt = fopen("grpc_rdma_time.log","w");
   grpc_rdma *rdma = (grpc_rdma *)gpr_malloc(sizeof(grpc_rdma));
   rdma->base.vtable = &vtable;
   rdma->peer_string = gpr_strdup(peer_string);
