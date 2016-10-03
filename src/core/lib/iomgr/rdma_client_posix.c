@@ -114,7 +114,6 @@ typedef struct {
 //}
 
 static void tc_on_alarm(grpc_exec_ctx *exec_ctx, void *acp, grpc_error *error) {
-  gpr_log(GPR_DEBUG,"CLIENT FUNC:tc_on_alarm CALLED");
   async_connect *ac = acp;
   int done;
   /*
@@ -362,7 +361,8 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
 
   char *name = NULL;
   struct rdma_conn_param cm_params;
-  int poll_count = 0;
+
+  int retry_count = 0;
 
   GRPC_ERROR_REF(error);
 
@@ -382,8 +382,8 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
   }
 
   while (rdma_get_cm_event(ec, &event) != 0) {
-    if (errno == EAGAIN && ++poll_count < 100){
-      usleep(50000);
+    if (errno == EAGAIN && retry_count < 200){
+      
     } else{
       gpr_log(GPR_ERROR, "Client: get_cm_event failed:%d",errno);
       goto error;
@@ -394,7 +394,6 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
   rdma_ack_cm_event(event);
   switch (event_handle.event) {
     case RDMA_CM_EVENT_ADDR_RESOLVED:
-      gpr_log(GPR_DEBUG, "Client: on_event RDMA_CM_EVENT_ADDR_RESOLVED");
       if (on_addr_resolved(id) != 0) {
         error = grpc_error_set_str(error, 
             GRPC_ERROR_STR_DESCRIPTION, "Failed on on_addr_resolved");
@@ -402,7 +401,6 @@ static void grpc_rdma_client_on_event(grpc_exec_ctx *exec_ctx,
       }
       break;
     case RDMA_CM_EVENT_ROUTE_RESOLVED:
-      gpr_log(GPR_DEBUG, "Client: on_event RDMA_CM_EVENT_ROUTE_RESOLVED");
       memset(&cm_params, 0, sizeof(cm_params));
       if ((rdma_connect(id, &cm_params)) != 0) {
         error = grpc_error_set_str(error,

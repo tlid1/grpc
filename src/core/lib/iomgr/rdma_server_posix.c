@@ -660,7 +660,6 @@ static void grpc_rdma_server_on_event(grpc_exec_ctx *exec_ctx,
     id = event->id;
     switch (event->event) {
         case RDMA_CM_EVENT_CONNECT_REQUEST:
-	    gpr_log(GPR_DEBUG, "Server: on_event RDMA_CM_EVENT_CONNECT_REQUEST");
             ret = on_connect_request(event->id);
             rdma_ack_cm_event(event);
             break;
@@ -675,8 +674,8 @@ static void grpc_rdma_server_on_event(grpc_exec_ctx *exec_ctx,
             ret = on_disconnect(exec_ctx, id);
             break;
         case RDMA_CM_EVENT_TIMEWAIT_EXIT:
-	    gpr_log(GPR_DEBUG,"Server: TIMEWAIT_EXIT");
-	    ret=0;
+	    gpr_log(GPR_DEBUG,"Server: on_event TIMEWAIT_EXIT");
+	    ret = -1;
             break;
         default:
 	    gpr_log(GPR_ERROR, "Server: on_event Unknow RDMA_CM_EVENT:%d", event->event);
@@ -716,7 +715,7 @@ static grpc_error *add_listener_to_server(grpc_rdma_server *s,
   struct rdma_cm_id *listener = NULL;
   struct rdma_event_channel *ec = NULL;
 
-  gpr_log(GPR_DEBUG, "add_listener_to_server");
+  gpr_log(GPR_DEBUG, "Server: add_listener");
   grpc_rdma_util_print_addr(addr);
   if ((ec = rdma_create_event_channel()) == NULL) {
 	  //grpc_exec_ctx_sched(exec_ctx, closure, GRPC_OS_ERROR(errno, "rdma_create_event_channel"), NULL);
