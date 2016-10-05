@@ -64,13 +64,6 @@
 #include <stdio.h>
 #include "src/core/lib/iomgr/rdma_utils_posix.h"
 
-#define GPR_RDMA_TIME
-#ifdef GPR_RDMA_TIME
-#include <stdio.h>
-#include <sys/time.h>
-#endif
-
-
 #ifdef GPR_HAVE_MSG_NOSIGNAL
 #define SENDMSG_FLAGS MSG_NOSIGNAL
 #else
@@ -272,8 +265,6 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
   void* ret;
   rdma_smessage* sms=NULL;
   readfd_notified(rdma);
-    struct timeval start, end;
-    gettimeofday( &start, NULL );
   if(rdma->dead) readerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "EOF");
   if(readerr==GRPC_ERROR_NONE) {
 	  void *ctx;
@@ -345,10 +336,6 @@ static void rdma_handle_read(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */,
 		  }
 	  }
   }
-
-  gettimeofday( &end, NULL );
-    int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(stderr, "rdma_handle_read %d\n", timeuse);
 }
 
 static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -358,8 +345,6 @@ static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
   rdma->read_cb = cb;
   gpr_slice_buffer_reset_and_unref(incoming_buffer);
 
-  struct timeval start, end;
-  gettimeofday( &start, NULL );
 
   if(rdma->incoming_buffer==&rdma->temp_buffer){
         gpr_slice_buffer_swap(rdma->incoming_buffer,incoming_buffer);
@@ -371,9 +356,6 @@ static void rdma_read(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
 	readfd_notify(exec_ctx,rdma);
   }
   //
-  gettimeofday( &end, NULL );
-    int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(stderr, "rdma_read %d\n", timeuse);
 }
 static void rdma_on_send_complete(grpc_exec_ctx *exec_ctx,grpc_rdma *rdma,grpc_error *error){
 	if(rdma->write_cb==NULL) return;
@@ -428,6 +410,7 @@ static bool rdma_flush(grpc_rdma *rdma, grpc_error **error) {
   sge.addr = (uintptr_t)rdma->content->send_buffer_region;
   sge.length = (uint32_t)((uintptr_t)outmemory_now-(uintptr_t)msg);
   sge.lkey = rdma->content->send_buffer_mr->lkey;
+  gpr_log(GPR_ERROR,"workreq.wr_id=%d",(int)workreq.wr_id);
   result=ibv_post_send(rdma->content->qp,&workreq,&bad_wr);
   --rdma->peer_buffer_count;
   //gpr_log(GPR_DEBUG,"Send a message,%d messages left",rdma->peer_buffer_count);
@@ -452,8 +435,6 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
   bool sendctx_has_data=0;
   if(rdma->dead) writeerr=grpc_error_set_str(error, GRPC_ERROR_STR_DESCRIPTION, "Shutdown");// GRPC_ERROR_CREATE("Shutdown");
 
-    struct timeval start, end;
-    gettimeofday( &start, NULL );
   if (writeerr == GRPC_ERROR_NONE) {
 	  void *ctx;
 	  unsigned events_completed=0;
@@ -517,9 +498,6 @@ static void rdma_handle_write(grpc_exec_ctx *exec_ctx, void *arg /* grpc_rdma */
           }
   }
 
-    gettimeofday( &end, NULL );
-    int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-    fprintf(stderr, "rdma_handle_write %d\n", timeuse);
 }
 
 static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
@@ -537,9 +515,6 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
       gpr_free(data);
     }
   }
-
-  struct timeval start, end;
-  gettimeofday( &start, NULL ); 
 
   GPR_TIMER_BEGIN("rdma_write", 0);
   GPR_ASSERT(rdma->write_cb == NULL);
@@ -568,10 +543,6 @@ static void rdma_write(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
 	  readfd_notify(exec_ctx,rdma);
   }
   GPR_TIMER_END("rdma_write", 0);
-
-  gettimeofday( &end, NULL );
-    int timeuse = (int) (1000000 * ( (long int)end.tv_sec - start.tv_sec ) + end.tv_usec - start.tv_usec);
-  fprintf(stderr, "rdma_write %d\n", timeuse);
 }
 
 static void rdma_add_to_pollset(grpc_exec_ctx *exec_ctx, grpc_endpoint *ep,
